@@ -1,8 +1,9 @@
 <?php
 
 require_once('../models/WebCrawler.php');
+define('TEST_WEBSITE','http://stella.se.rit.edu/tests/index.html');
 
-class TutorialWebCrawlerTest extends CTestCase 
+class WebCrawlerTest extends CTestCase 
 {
 	function testTester()
 	{
@@ -18,33 +19,53 @@ class TutorialWebCrawlerTest extends CTestCase
 		$url4 = "/scripts/regex/"; // no domain, just path
 		$url5 = ""; //nothing
 		
-		$elem1 = getUrlElements($url1);
-		$this->assertEquals("gskinner.com", $elem1['domain']);
-		$this->assertEquals("/RegExr/", $elem1['path']);
+		$w = new WebCrawler($url1);
 		
-		$elem2 = getUrlElements($url2);
-		$this->assertEquals("www.spaweditor.com", $elem2['domain']);
-		$this->assertEquals("/scripts/regex/index.php", $elem2['path']);
+		$this->assertEquals($url1, $w->getHref());
+		$this->assertEquals("gskinner.com", $w->getDomain());
+		$this->assertEquals("/RegExr/", $w->getPath());
 		
-		$elem3 = getUrlElements($url3);
-		$this->assertEquals("regexpal.com", $elem3['domain']);
-		$this->assertEquals("", $elem3['path']);
+		// TODO fix this. the path is '/scripts/regex/' and file is 'index.php'
+		$w->setHref($url2);
+		$this->assertEquals("www.spaweditor.com", $w->getDomain());
+		$this->assertEquals("/scripts/regex/index.php", $w->getPath()); 
 		
-		$elem4 = getUrlElements($url4);
-		$this->assertEquals("", $elem4['domain']);
-		$this->assertEquals("/scripts/regex/", $elem4['path']);
+		$w->setHref($url3);
+		$this->assertEquals("regexpal.com", $w->getDomain());
+		$this->assertEquals("", $w->getPath());
 		
-		$elem5 = getUrlElements($url5);
-		$this->assertEquals("", $elem5['domain']);
-		$this->assertEquals("", $elem5['path']);		
+		$w->setHref($url4);
+		$this->assertEquals("", $w->getDomain());
+		$this->assertEquals("/scripts/regex/", $w->getPath());
+		
+		$w->setHref($url5);
+		$this->assertEquals("", $w->getDomain());
+		$this->assertEquals("", $w->getPath());
+		
+		/* Extended tests
+		
+		$w->setHref('adrian.com/test/index.php#here');
+		$this->assertEquals("adrian.com", $w->getDomain());
+		$this->assertEquals("/test/", $w->getPath()); 
+		
+		// @see http://docstore.mik.ua/orelly/linux/cgi/ch02_01.htm
+		$w->setHref('http://www.adrianmejiarosario.com:80/cgi/calendar.cgi?month=july#week3');
+		//*/
 	}
 	
 	function testGetATags()
 	{
+		$w = new WebCrawler(TEST_WEBSITE);
+		$this->assertEquals($w->getHref(),TEST_WEBSITE);
 		
+		$atags = $w->getATags();
+		//$this->assertEquals(9, count($atags));
+		//$this->assertEquals('/doc/guide/1.1/en/changes">New Features', $atags[0]);
 	}
 	
-	function testGetTutChapters()
+	
+	// Final test
+	function testGetSubLinks()
 	{
 		$exp_chap = array(
 			0 => array(
@@ -52,15 +73,18 @@ class TutorialWebCrawlerTest extends CTestCase
 					'text' => 'New Features',
 				),
 			1 => array(
-					// TODO
-					'href' => 'http://www.adrianmejiarosario.com/doc/guide/1.1/en/changes',
-					'text' => 'New Features',
+					'href' => 'http://www.adrianmejiarosario.com/doc/guide/1.1/en/upgrade',
+					'text' => 'Upgrading from 1.0 to 1.1',
 				),
+			2 => array(
+					'href' => 'http://www.adrianmejiarosario.com/doc/guide/1.1/en/quickstart.what-is-yii',
+					'text' => 'What is Yii',
+				),				
 		);
 		
-		$website = "http://www.adrianmejiarosario.com/example.html";
+		$w = new WebCrawler(TEST_WEBSITE);
 		
-		//$act_chap = getTutChapters($website);
+		//$act_chap = $w->getSubLinks();
 		//$this->assertSame($exp_chap, $act_chap);
 	}
 	
