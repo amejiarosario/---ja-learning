@@ -59,8 +59,20 @@ class WebCrawlerTest extends CTestCase
 		$this->assertEquals($w->getHref(),TEST_WEBSITE);
 		
 		$atags = $w->getATags();
-		//$this->assertEquals(9, count($atags));
-		//$this->assertEquals('/doc/guide/1.1/en/changes">New Features', $atags[0]);
+		$this->assertEquals(9, count($atags[0]));
+		$this->assertEquals('<a href="/doc/guide/1.1/en/changes">New Features</a>', $atags[0][0]);
+		$this->assertEquals('/doc/guide/1.1/en/changes', $atags[1][0]);
+		$this->assertEquals('New Features', $atags[2][0]);
+		
+		$htmlCode = <<<HTML
+<a href="http://twitter.com/?status=http%3A//www.adrianmejiarosario.com/content/drupal-modules-seo-optimation%20Drupal%20Modules%20for%20SEO%20optimation%20" class="tweet" rel="nofollow" onclick="window.open(this.href); return false;"><img typeof="foaf:Image" src="http://www.adrianmejiarosario.com/sites/all/modules/tweet/twitter.png" alt="Post to Twitter" title="Post to Twitter" /></a>
+HTML;
+		$atags = $w->getATags($htmlCode);
+		$this->assertEquals(1, count($atags[0]));
+		$this->assertEquals($htmlCode, $atags[0][0]);
+		$this->assertEquals('http://twitter.com/?status=http%3A//www.adrianmejiarosario.com/content/drupal-modules-seo-optimation%20Drupal%20Modules%20for%20SEO%20optimation%20', $atags[1][0]);
+		$this->assertEquals('<img typeof="foaf:Image" src="http://www.adrianmejiarosario.com/sites/all/modules/tweet/twitter.png" alt="Post to Twitter" title="Post to Twitter" />', $atags[2][0]);
+			
 	}
 	
 	
