@@ -22,30 +22,30 @@ class WebCrawlerTest extends CTestCase
 		$w = new WebCrawler($url1);
 		
 		$this->assertEquals($url1, $w->getHref());
-		$this->assertEquals("gskinner.com", $w->getDomain());
+		$this->assertEquals("gskinner.com", $w->getHost());
 		$this->assertEquals("/RegExr/", $w->getPath());
 		
 		// TODO fix this. the path is '/scripts/regex/' and file is 'index.php'
 		$w->setHref($url2);
-		$this->assertEquals("www.spaweditor.com", $w->getDomain());
+		$this->assertEquals("www.spaweditor.com", $w->getHost());
 		$this->assertEquals("/scripts/regex/index.php", $w->getPath()); 
 		
 		$w->setHref($url3);
-		$this->assertEquals("regexpal.com", $w->getDomain());
+		$this->assertEquals("regexpal.com", $w->getHost());
 		$this->assertEquals("", $w->getPath());
 		
 		$w->setHref($url4);
-		$this->assertEquals("", $w->getDomain());
+		$this->assertEquals("", $w->getHost());
 		$this->assertEquals("/scripts/regex/", $w->getPath());
 		
 		$w->setHref($url5);
-		$this->assertEquals("", $w->getDomain());
+		$this->assertEquals("", $w->getHost());
 		$this->assertEquals("", $w->getPath());
 		
 		/* Extended tests
 		
 		$w->setHref('adrian.com/test/index.php#here');
-		$this->assertEquals("adrian.com", $w->getDomain());
+		$this->assertEquals("adrian.com", $w->getHost());
 		$this->assertEquals("/test/", $w->getPath()); 
 		
 		// @see http://docstore.mik.ua/orelly/linux/cgi/ch02_01.htm
@@ -75,9 +75,25 @@ HTML;
 			
 	}
 	
-	function testGetUrlElements()
+	function testGetATagsWithSubLinks()
 	{
-		
+	   /*
+		* partial links. All of these are in the same domain. (FINE) e.g 
+				<a href="/docs/guides/">fine</a>
+		* full links in the same domain+path (PARSE) e.g. 
+				<a href="http://www.adrianmejiarosario.com/tests2/">fine</a>
+				<a href="http://www.adrianmejiarosario.com/tests2/index.html#here">fine</a>
+		* full links in other paths or domains (PARSE)
+				<a href="http://www.adrianmejiarosario.com/tests/index.html">not</a>
+				<a href="www.adrianmejiarosario.com/tests/index.html">not</a>
+				<a href="adrianmejiarosario.com/tests/index.html">not</a>
+				<a href="gogole.com/tests2">not</a>
+		*/
+
+		$w = new WebCrawler(TEST_WEBSITE);
+		$chap = $w->getATagsWithSubLinks();
+		var_export($chap);
+		$this->assertEquals(6, count($chap));
 	}
 	
 	
