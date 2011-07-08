@@ -75,6 +75,11 @@ HTML;
 			
 	}
 	
+	function testGetUrlElements()
+	{
+		
+	}
+	
 	
 	// Final test
 	function testGetSubLinks()
