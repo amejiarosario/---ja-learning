@@ -83,14 +83,18 @@ class WebCrawler {
 		return $this->_sourceCode;
 	}
 	
-	// TODO replace all other preg_match call with this!
+	/**
+	 * Regular expression evaluator
+	 * @param $regex regular expression
+	 * @param $text text to apply the regex
+	 * @return multi array of results from the evaluation of the regular expression (RegEx)
+	 *
+	 */
 	public function regex($regex, $text='')
 	{
 		if(!isset($regex) || strlen($regex)<3)
 			throw new Exception('No regex string to evaluate.');
-		if(!isset($text) || strlen($text)<1)
-			$text = $this->getSourceCode();	
-		// espape values --> replace '\' for '\\'; ''' for '\''; and '/' for '.'	
+		// espape values --> replace '\' for '\\' OR '/' for '.'; ''' for '\'';
 		preg_match_all($regex, $text, $result);
 		return $result;
 	}
@@ -105,19 +109,38 @@ class WebCrawler {
 	 */
 	public function getATags($HtmlCode='')
 	{
+		if(!isset($HtmlCode) || strlen($HtmlCode)<1)
+			$HtmlCode = $this->getSourceCode();	
 		return $this->regex('/<a\\s+href\\s*=\\s*(?:"|\')([^"\']*)[^>]*\\s*>((?:(?!<.a>).)*)<.a>/i', $HtmlCode);
  
 	}
 	
+	/**
+	 * Parse the URL address into its parts.
+	 * @return multi-dimensional array: 
+	 *		[0] complete match
+	 * 		[1] schema (http,ftp,...); 
+	 * 		[2] domain/host; 
+	 *		[3] path and queries
+	 */
 	public function getUrlElements($url)
 	{
-		$e = parse_url($url);
-		if(!isset($e['host']))
-			$e['host'] = '';
-		if(!isset($e['path']))
-			$e['path'] = '';
+		return $this->regex('%^(?:(https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?([/?].*)?%i', $url);
 	}
 	
+	/**
+	 * Identifies the domain and path of the given URL
+	 */
+	private function setUrlElements()
+	{
+		$url = $this->getUrlElements($this->_href);
+		$this->_hostname = $url[2][0];
+		$this->_path = $url[3][0];		
+	}
+
+	/**
+	 * Get
+	 */
 	public function getATagsWithSubLinks()
 	{
 		$subLinks = array();
@@ -129,10 +152,26 @@ class WebCrawler {
 		for($x=0; $x < count($aTags[1]); $x++)
 		{
 			$linkUrl = $this->getUrlElements($aTags[1][$x]);
-			
+
+/*//
+printf("****linkUrl <%s> has? getPath <%s>  \r\n", $linkUrl[3][0], $this->getPath());
+*/			
+			// check if same path or deeper strpos($this->getPath(), $linkUrl[3][0]) > -1 
+			$samePath = false;
+			if($this->getPath() === $linkUrl[3][0] ) // equals
+				$samePath = true;
+			else if($this->getPath()==="" || $linkUrl[3][0]==="")
+				$samePath = false;
+			else if(strpos($this->getPath(), $linkUrl[3][0]) > -1) // deeper
+				$samePath = true;
+/*			
+			var_export($linkUrl);
+			printf("\r\ngetHost <%s> == linkUrl <%s> = %d \r\n",$this->getHost(),$linkUrl[2][0],($this->getHost() == $linkUrl[2][0]) );
+			printf("linkUrl <%s> has? getPath <%s> samePath? = %s. \r\n", $linkUrl[3][0], $this->getPath(), $samePath?'true':'false');
+			echo "\r\n-------------\r\n";
+*/
 			// check that the links are in the tut's path or deeper
-			if ( $this->getHost() === $linkUrl['host'] && 
-				strpos($this->getPath(), $linkUrl['path']) > -1 ) 
+			if ( $samePath && ( $linkUrl[2][0]==="" || ($this->getHost() === $linkUrl[2][0])) ) 
 			{
 				$subLinks[] = array('name'=>$aTags[2][$x], 'link'=> $aTags[1][$x]);
 			}
@@ -140,21 +179,6 @@ class WebCrawler {
 		
 		return $subLinks;
 	}
-
-	//-----------------
-	// Private methods
-	//-----------------
-	
-	/**
-	 * Identifies the domain and path of the given URL
-	 */
-	private function setUrlElements()
-	{
-		$url = $this->getUrlElements($this->_href);
-		$this->_hostname = $url['host'];
-		$this->_path = $url['path'];		
-	}
-	
 }
 
 ?>

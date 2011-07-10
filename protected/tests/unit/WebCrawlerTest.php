@@ -1,7 +1,9 @@
 <?php
 
 require_once('../models/WebCrawler.php');
+
 define('TEST_WEBSITE','http://stella.se.rit.edu/tests/index.html');
+define('TEST_WEBSITE_LINKS','11');
 
 class WebCrawlerTest extends CTestCase 
 {
@@ -42,15 +44,19 @@ class WebCrawlerTest extends CTestCase
 		$this->assertEquals("", $w->getHost());
 		$this->assertEquals("", $w->getPath());
 		
-		/* Extended tests
+		// Second test battery
 		
-		$w->setHref('adrian.com/test/index.php#here');
-		$this->assertEquals("adrian.com", $w->getHost());
-		$this->assertEquals("/test/", $w->getPath()); 
+		$url = $w->getUrlElements("");
+		$this->assertEquals("", $url[1][0]); // schema / protocol
+		$this->assertEquals("", $url[2][0]); // domain
+		$this->assertEquals("", $url[3][0]); // path
 		
-		// @see http://docstore.mik.ua/orelly/linux/cgi/ch02_01.htm
-		$w->setHref('http://www.adrianmejiarosario.com:80/cgi/calendar.cgi?month=july#week3');
-		//*/
+		$url = $w->getUrlElements("ftp://www.adrian-mejia.com/index.php");
+		$this->assertEquals("ftp", $url[1][0]); // schema / protocol
+		$this->assertEquals("www.adrian-mejia.com", $url[2][0]); // domain
+		$this->assertEquals("/index.php", $url[3][0]); // path		
+		
+		
 	}
 	
 	function testGetATags()
@@ -59,7 +65,7 @@ class WebCrawlerTest extends CTestCase
 		$this->assertEquals($w->getHref(),TEST_WEBSITE);
 		
 		$atags = $w->getATags();
-		$this->assertEquals(9, count($atags[0]));
+		$this->assertEquals(TEST_WEBSITE_LINKS, count($atags[0]));
 		$this->assertEquals('<a href="/doc/guide/1.1/en/changes">New Features</a>', $atags[0][0]);
 		$this->assertEquals('/doc/guide/1.1/en/changes', $atags[1][0]);
 		$this->assertEquals('New Features', $atags[2][0]);
@@ -91,13 +97,13 @@ HTML;
 		*/
 
 		$w = new WebCrawler(TEST_WEBSITE);
-		$chap = $w->getATagsWithSubLinks();
+		//$chap = $w->getATagsWithSubLinks();
 		var_export($chap);
-		$this->assertEquals(6, count($chap));
+		$this->assertEquals(2, count($chap));
 	}
 	
 	
-	// Final test
+	// Final test: remove, the final test was the previous one.
 	function testGetSubLinks()
 	{
 		$exp_chap = array(
@@ -120,8 +126,6 @@ HTML;
 		//$act_chap = $w->getSubLinks();
 		//$this->assertSame($exp_chap, $act_chap);
 	}
-	
-
 }
 
 ?>
