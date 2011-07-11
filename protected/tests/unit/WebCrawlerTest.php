@@ -5,6 +5,8 @@ require_once('../models/WebCrawler.php');
 define('TEST_WEBSITE','http://stella.se.rit.edu/tests/index.html');
 define('TEST_WEBSITE_LINKS','11');
 
+// asserts -> http://www.phpunit.de/manual/3.2/en/api.html#api.assert.tables.assertions
+
 class WebCrawlerTest extends CTestCase 
 {
 	function testTester()
@@ -83,22 +85,8 @@ HTML;
 	
 	function testGetATagsWithSubLinks()
 	{
-	   /*
-		* partial links. All of these are in the same domain. (FINE) e.g 
-				<a href="/docs/guides/">fine</a>
-		* full links in the same domain+path (PARSE) e.g. 
-				<a href="http://www.adrianmejiarosario.com/tests2/">fine</a>
-				<a href="http://www.adrianmejiarosario.com/tests2/index.html#here">fine</a>
-		* full links in other paths or domains (PARSE)
-				<a href="http://www.adrianmejiarosario.com/tests/index.html">not</a>
-				<a href="www.adrianmejiarosario.com/tests/index.html">not</a>
-				<a href="adrianmejiarosario.com/tests/index.html">not</a>
-				<a href="gogole.com/tests2">not</a>
-		*/
-
 		$w = new WebCrawler(TEST_WEBSITE);
-		//$chap = $w->getATagsWithSubLinks();
-		var_export($chap);
+		$chap = $w->getATagsWithSubLinks();
 		$this->assertEquals(2, count($chap));
 	}
 	
@@ -106,25 +94,15 @@ HTML;
 	// Final test: remove, the final test was the previous one.
 	function testGetSubLinks()
 	{
-		$exp_chap = array(
-			0 => array(
-					'href' => 'http://www.adrianmejiarosario.com/doc/guide/1.1/en/changes',
-					'text' => 'New Features',
-				),
-			1 => array(
-					'href' => 'http://www.adrianmejiarosario.com/doc/guide/1.1/en/upgrade',
-					'text' => 'Upgrading from 1.0 to 1.1',
-				),
-			2 => array(
-					'href' => 'http://www.adrianmejiarosario.com/doc/guide/1.1/en/quickstart.what-is-yii',
-					'text' => 'What is Yii',
-				),				
-		);
+		$w = new WebCrawler("http://www.yiiframework.com/doc/guide/");
+		$chap = $w->getATagsWithSubLinks();
+		var_export($chap);
 		
-		$w = new WebCrawler(TEST_WEBSITE);
+		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
 		
-		//$act_chap = $w->getSubLinks();
-		//$this->assertSame($exp_chap, $act_chap);
+		$this->assertTrue(count($chap)>20);
+		$this->assertContains("/doc/guide/", $it);
+		$this->assertContains("/doc/guide/1.1/en/changes", $chap);
 	}
 }
 

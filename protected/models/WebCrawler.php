@@ -1,11 +1,4 @@
 <?php
-/*
-	@see http://gskinner.com/RegExr/ (coolest!)
-	
-	@see http://www.spaweditor.com/scripts/regex/index.php  (full PHP)
-	@seealso http://www.regexpal.com/
-*/
-
 /**
  * Get the source code of a website and analize its components.
  */
@@ -15,12 +8,8 @@ class WebCrawler {
 	private $_path;
 	private $_sourceCode;
 	
-	//-----------------
-	// Public methods
-	//-----------------
-	
 	/**
-	 * Constructor get the link
+	 * Constructor 
 	 */
 	public function __construct($href)
 	{
@@ -139,7 +128,7 @@ class WebCrawler {
 	}
 
 	/**
-	 * Get
+	 * @return an array with the keys 'name' and 'links' of the sublinks
 	 */
 	public function getATagsWithSubLinks()
 	{
@@ -153,9 +142,6 @@ class WebCrawler {
 		{
 			$linkUrl = $this->getUrlElements($aTags[1][$x]);
 
-/*//
-printf("****linkUrl <%s> has? getPath <%s>  \r\n", $linkUrl[3][0], $this->getPath());
-*/			
 			// check if same path or deeper strpos($this->getPath(), $linkUrl[3][0]) > -1 
 			$samePath = false;
 			if($this->getPath() === $linkUrl[3][0] ) // equals
@@ -164,12 +150,7 @@ printf("****linkUrl <%s> has? getPath <%s>  \r\n", $linkUrl[3][0], $this->getPat
 				$samePath = false;
 			else if(strpos($this->getPath(), $linkUrl[3][0]) > -1) // deeper
 				$samePath = true;
-/*			
-			var_export($linkUrl);
-			printf("\r\ngetHost <%s> == linkUrl <%s> = %d \r\n",$this->getHost(),$linkUrl[2][0],($this->getHost() == $linkUrl[2][0]) );
-			printf("linkUrl <%s> has? getPath <%s> samePath? = %s. \r\n", $linkUrl[3][0], $this->getPath(), $samePath?'true':'false');
-			echo "\r\n-------------\r\n";
-*/
+
 			// check that the links are in the tut's path or deeper
 			if ( $samePath && ( $linkUrl[2][0]==="" || ($this->getHost() === $linkUrl[2][0])) ) 
 			{
