@@ -1,4 +1,7 @@
 <?php
+
+require_once('Utils.php');
+
 /**
  * Get the source code of a website and analize its components.
  */
@@ -6,6 +9,8 @@ class WebCrawler {
 	private $_href;
 	private $_hostname;
 	private $_path;
+	private $_file;
+	private $_query;
 	private $_sourceCode;
 	
 	/**
@@ -25,6 +30,8 @@ class WebCrawler {
 		unset($this->_hostname);
 		unset($this->_path);
 		unset($this->_sourceCode);
+		unset($this->_file);
+		unset($this->_query);
 	}
 
 	/**
@@ -48,6 +55,30 @@ class WebCrawler {
 	}
 	
 	/**
+	 * Get File	 
+	 */	
+	public function getFile()
+	{
+		if(!isset($this->_file))
+		{
+			$this->setUrlElements();
+		}
+		return $this->_file;
+	}
+	
+	/**
+	 * Get Query	 
+	 */	
+	public function getQuery()
+	{
+		if(!isset($this->_query))
+		{
+			$this->setUrlElements();
+		}
+		return $this->_query;
+	}	
+		
+	/**
 	 * Get URL path
 	 */		
 	public function getPath()
@@ -66,7 +97,6 @@ class WebCrawler {
 	{
 		if(!isset($this->_sourceCode))
 		{
-			$this->_sourceCode = stream_context_create(array('http' => array('header'=>'Connection: close'))); 
 			$this->_sourceCode = file_get_contents($this->getHref()); // TODO handle file not found
 		}
 		return $this->_sourceCode;
@@ -100,21 +130,28 @@ class WebCrawler {
 	{
 		if(!isset($HtmlCode) || strlen($HtmlCode)<1)
 			$HtmlCode = $this->getSourceCode();	
-		return $this->regex('/<a\\s+href\\s*=\\s*(?:"|\')([^"\']*)[^>]*\\s*>((?:(?!<.a>).)*)<.a>/i', $HtmlCode);
+		return $this->regex('%<a\\s+href\\s*=\\s*(?:"|\')([^"\']*)[^>]*\\s*>((?:(?!</a>).)*)</a>%i', $HtmlCode);
  
 	}
 	
 	/**
 	 * Parse the URL address into its parts.
 	 * @return multi-dimensional array: 
-	 *		[0] complete match
+	 *		[0] link (complete match)
 	 * 		[1] schema (http,ftp,...); 
 	 * 		[2] domain/host; 
-	 *		[3] path and queries
+	 *		[3] path 
+	 *		[4] file
+	 *		[5] query
 	 */
 	public function getUrlElements($url)
 	{
-		return $this->regex('%^(?:(https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?([/?].*)?%i', $url);
+		// get file and query
+		// (\w+\.\w+)([^.]*)$
+		
+		
+		$arr = $this->regex('%^(?:(https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?(.*?)?(?:(\w+\.\w+)([^.]*))?$%i', $url);
+		return array('link' => $arr[0], 'schema'=>$arr[1], 'domain'=>$arr[2], 'path'=>$arr[3], 'file'=>$arr[4], 'query'=>$arr[5]);
 	}
 	
 	/**
@@ -123,36 +160,44 @@ class WebCrawler {
 	private function setUrlElements()
 	{
 		$url = $this->getUrlElements($this->_href);
-		$this->_hostname = $url[2][0];
-		$this->_path = $url[3][0];		
+		$this->_hostname = $url['domain'][0];
+		$this->_path = $url['path'][0];
+		$this->_file = $url['file'][0];
+		$this->_query = $url['query'][0];	
 	}
 
 	/**
 	 * @return an array with the keys 'name' and 'links' of the sublinks
 	 */
-	public function getATagsWithSubLinks()
+	public function getATagsWithSubLinks($HtmlCode = '')
 	{
 		$subLinks = array();
 		
 		// 1. get all the A Tags
-		$aTags = $this->getATags();
+		$aTags = $this->getATags($HtmlCode);
 		
 		// 2. return only the ones that are in the same domain+path or deeper
 		for($x=0; $x < count($aTags[1]); $x++)
 		{
 			$linkUrl = $this->getUrlElements($aTags[1][$x]);
+			$equivalent_path = "";
+					
+			if($this->getPath() == "")
+				$equivalent_path = "/";
+			else
+				$equivalent_path = $this->getPath();
 
 			// check if same path or deeper strpos($this->getPath(), $linkUrl[3][0]) > -1 
 			$samePath = false;
-			if($this->getPath() === $linkUrl[3][0] ) // equals
+			if($this->getPath() === $linkUrl['path'][0] ) // equal path
 				$samePath = true;
-			else if($this->getPath()==="" || $linkUrl[3][0]==="")
+			else if($this->getPath() === "" || $linkUrl['path'][0] === "")
 				$samePath = false;
-			else if(strpos($this->getPath(), $linkUrl[3][0]) > -1) // deeper
+			else if(strpos($linkUrl['path'][0],$equivalent_path) > -1) // deeper
 				$samePath = true;
 
 			// check that the links are in the tut's path or deeper
-			if ( $samePath && ( $linkUrl[2][0]==="" || ($this->getHost() === $linkUrl[2][0])) ) 
+			if ( $samePath && ( $linkUrl['domain'][0]==="" || ($this->getHost() === $linkUrl['domain'][0])) ) 
 			{
 				$subLinks[] = array('name'=>$aTags[2][$x], 'link'=> $aTags[1][$x]);
 			}
