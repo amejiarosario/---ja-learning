@@ -86,19 +86,19 @@ class WebCrawlerTest extends CTestCase
 		$this->assertEquals($w->getHref(),TEST_WEBSITE);
 		
 		$atags = $w->getATags();
-		$this->assertEquals(TEST_WEBSITE_LINKS, count($atags[0]));
-		$this->assertEquals('<a href="/doc/guide/1.1/en/changes">New Features</a>', $atags[0][0]);
-		$this->assertEquals('/doc/guide/1.1/en/changes', $atags[1][0]);
-		$this->assertEquals('New Features', $atags[2][0]);
+		$this->assertEquals(TEST_WEBSITE_LINKS, count($atags['ahref']));
+		$this->assertEquals('<a href="/doc/guide/1.1/en/changes">New Features</a>', $atags['ahref'][0]);
+		$this->assertEquals('/doc/guide/1.1/en/changes', $atags['link'][0]);
+		$this->assertEquals('New Features', $atags['text'][0]);
 		
 		$htmlCode = <<<HTML
 <a href="http://twitter.com/?status=http%3A//www.adrianmejiarosario.com/content/drupal-modules-seo-optimation%20Drupal%20Modules%20for%20SEO%20optimation%20" class="tweet" rel="nofollow" onclick="window.open(this.href); return false;"><img typeof="foaf:Image" src="http://www.adrianmejiarosario.com/sites/all/modules/tweet/twitter.png" alt="Post to Twitter" title="Post to Twitter" /></a>
 HTML;
 		$atags = $w->getATags($htmlCode);
-		$this->assertEquals(1, count($atags[0]));
-		$this->assertEquals($htmlCode, $atags[0][0]);
-		$this->assertEquals('http://twitter.com/?status=http%3A//www.adrianmejiarosario.com/content/drupal-modules-seo-optimation%20Drupal%20Modules%20for%20SEO%20optimation%20', $atags[1][0]);
-		$this->assertEquals('<img typeof="foaf:Image" src="http://www.adrianmejiarosario.com/sites/all/modules/tweet/twitter.png" alt="Post to Twitter" title="Post to Twitter" />', $atags[2][0]);
+		$this->assertEquals(1, count($atags['ahref']));
+		$this->assertEquals($htmlCode, $atags['ahref'][0]);
+		$this->assertEquals('http://twitter.com/?status=http%3A//www.adrianmejiarosario.com/content/drupal-modules-seo-optimation%20Drupal%20Modules%20for%20SEO%20optimation%20', $atags['link'][0]);
+		$this->assertEquals('<img typeof="foaf:Image" src="http://www.adrianmejiarosario.com/sites/all/modules/tweet/twitter.png" alt="Post to Twitter" title="Post to Twitter" />', $atags['text'][0]);
 			
 	}
 	
@@ -155,8 +155,8 @@ HTML;
 		$links = $w->getATagsWithSubLinks($sampleHTML);
 		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($links));
 
-		d(__LINE__,$w->getHref(),'$w->getHref');
-		d(__LINE__,$links,'$links');
+		//d(__LINE__,__FILE__,$w->getHref(),'$w->getHref');
+		//d(__LINE__,__FILE__,$links,'$links');
 		
 		$this->assertEquals($w->getHref(),"http://www.adrian.com");
 		$this->assertContains("/test/",$it);
@@ -172,13 +172,21 @@ HTML;
 		$w = new WebCrawler("http://www.yiiframework.com/doc/guide/");
 		$chap = $w->getATagsWithSubLinks();
 		
-		//d(__LINE__,$chap,'chap');
+		//d(__LINE__,__FILE__,$chap,'chap');
 		
 		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
 		
 		$this->assertTrue(count($chap) > 20);
 		$this->assertContains("/doc/guide/", $it);
-		$this->assertContains("/doc/guide/1.1/en/changes", $chap);
+
+		$this->assertContains("/doc/guide/1.1/en/changes", $it);
+		$this->assertContains("/doc/guide/1.1/en/quickstart.first-app", $it);
+		$this->assertContains("/doc/guide/1.1/sv/index", $it);
+
+		$this->assertNotContains("/doc/api/", $it);
+		$this->assertNotContains("/wiki/", $it);
+		$this->assertNotContains("/", $it);
+		$this->assertNotContains("", $it);
 	}
 }
 

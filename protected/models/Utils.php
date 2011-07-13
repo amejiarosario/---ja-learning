@@ -17,11 +17,12 @@ function rstrpos ($haystack, $needle, $offset)
 /*
  * Debug print
  */
-function d($line,$var, $varname="variable")
+function d($line,$file,$var, $varname="variable")
 {
-	// regular use
-	// d(__LINE__, $variable, '$variable')
-	echo "\n#($line) ". $varname . ' = ';
+	// example of use:
+	// d(__LINE__,__FILE__, $variable, '$variable')
+	
+	echo "\n#($file:$line) ". $varname . ' = ';
 	var_export($var);
 	echo "\n";
 } 

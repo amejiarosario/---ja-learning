@@ -53,6 +53,7 @@ class WebCrawler {
 		}
 		return $this->_hostname;
 	}
+	public function getDomain() {return getHost();}
 	
 	/**
 	 * Get File	 
@@ -130,7 +131,8 @@ class WebCrawler {
 	{
 		if(!isset($HtmlCode) || strlen($HtmlCode)<1)
 			$HtmlCode = $this->getSourceCode();	
-		return $this->regex('%<a\\s+href\\s*=\\s*(?:"|\')([^"\']*)[^>]*\\s*>((?:(?!</a>).)*)</a>%i', $HtmlCode);
+		$a = $this->regex('%<a\\s+href\\s*=\\s*(?:"|\')([^"\']*)[^>]*\\s*>((?:(?!</a>).)*)</a>%i', $HtmlCode);
+		return array('ahref'=>$a[0],'link'=>$a[1],'text'=>$a[2]);
  
 	}
 	
@@ -177,9 +179,9 @@ class WebCrawler {
 		$aTags = $this->getATags($HtmlCode);
 		
 		// 2. return only the ones that are in the same domain+path or deeper
-		for($x=0; $x < count($aTags[1]); $x++)
+		for($x=0; $x < count($aTags['link']); $x++)
 		{
-			$linkUrl = $this->getUrlElements($aTags[1][$x]);
+			$linkUrl = $this->getUrlElements($aTags['link'][$x]);
 			$equivalent_path = "";
 					
 			if($this->getPath() == "")
@@ -187,8 +189,23 @@ class WebCrawler {
 			else
 				$equivalent_path = $this->getPath();
 
-			// check if same path or deeper strpos($this->getPath(), $linkUrl[3][0]) > -1 
+			
 			$samePath = false;
+			
+			// if domains are equals
+			if($this->getHost() === $linkUrl['domain'][0] || $linkUrl['domain'][0] === "" ) 
+			{
+				// if there is not path in the domain, all the links' path are inside 
+				if(	$this->getPath() === "" || 
+					$this->getPath() === "/" || 
+					strpos($linkUrl['path'][0],$this->getPath()) === 0
+					)  
+				{	
+					$subLinks[] = array('name'=>$aTags['text'][$x], 'link'=> $aTags['link'][$x]);
+				} 
+			}
+			
+			/*
 			if($this->getPath() === $linkUrl['path'][0] ) // equal path
 				$samePath = true;
 			else if($this->getPath() === "" || $linkUrl['path'][0] === "")
@@ -199,8 +216,9 @@ class WebCrawler {
 			// check that the links are in the tut's path or deeper
 			if ( $samePath && ( $linkUrl['domain'][0]==="" || ($this->getHost() === $linkUrl['domain'][0])) ) 
 			{
-				$subLinks[] = array('name'=>$aTags[2][$x], 'link'=> $aTags[1][$x]);
+				
 			}
+			*/
 		}
 		
 		return $subLinks;
