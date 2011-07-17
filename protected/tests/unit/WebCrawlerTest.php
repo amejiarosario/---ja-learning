@@ -105,7 +105,7 @@ HTML;
 	function testGetATagsWithSubLinks()
 	{
 		$w = new WebCrawler(TEST_WEBSITE);
-		$chap = $w->getATagsWithSubLinks();
+		$chap = $w->getSubLinks();
 		/*
 		d(__LINE__,$w->getHref(),'$w->getHref');
 		d(__LINE__,$chap,'$links');
@@ -131,7 +131,7 @@ HTML;
 HTML;
 		
 		$w->setHref("http://www.adrian.com/test/");
-		$links = $w->getATagsWithSubLinks($sampleHTML);
+		$links = $w->getSubLinks($sampleHTML);
 		
 		/*
 		d(__LINE__,$w->getHref(),'$w->getHref');
@@ -152,7 +152,7 @@ HTML;
 		$this->assertContains("/test/index.php",$it);
 		$this->assertContains("/test/path/to/",$it);		
 		
-		$links = $w->getATagsWithSubLinks($sampleHTML);
+		$links = $w->getSubLinks($sampleHTML);
 		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($links));
 
 		//d(__LINE__,__FILE__,$w->getHref(),'$w->getHref');
@@ -170,7 +170,7 @@ HTML;
 	function testGetSubLinks()
 	{
 		$w = new WebCrawler("http://www.yiiframework.com/doc/guide/");
-		$chap = $w->getATagsWithSubLinks();
+		$chap = $w->getSubLinks();
 		
 		//d(__LINE__,__FILE__,$chap,'chap');
 		
@@ -187,6 +187,9 @@ HTML;
 		$this->assertNotContains("/wiki/", $it);
 		$this->assertNotContains("/", $it);
 		$this->assertNotContains("", $it);
+		
+		$this->assertEquals("/doc/guide/",$chap[0]['link']);
+		$this->assertEquals("Guide",$chap[0]['text']);
 	}
 }
 

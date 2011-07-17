@@ -41,7 +41,7 @@ class Chapter extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('tutorial_id, name, link, accessed, created_at', 'required'),
+			array('tutorial_id, name, link', 'required'),
 			array('tutorial_id', 'numerical', 'integerOnly'=>true),
 			array('name, link', 'length', 'max'=>255),
 			// The following rule is used by search().

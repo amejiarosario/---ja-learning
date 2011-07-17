@@ -1,5 +1,8 @@
 <?php
 
+require_once 'Utils.php';
+require_once 'WebCrawler.php';
+
 /**
  * This is the model class for table "tbl_tutorials".
  *
@@ -108,8 +111,32 @@ class Tutorial extends CActiveRecord
 	private function tutorialWebCrawler($website)
 	{
 		$test = "tutorialWebCrawler " . $website ;
-		echo Yii::trace(CVarDumper::dumpAsString($test),'vardump');
-	
+		//echo Yii::trace(CVarDumper::dumpAsString($test),'vardump');
+		
+		// Save all the chapter of the a link
+		$w = new WebCrawler($website);
+		$subLinks = $w->getSubLinks();
+		
+		//echo Yii::trace(CVarDumper::dump(count($subLinks)),'$subLinks');
+		
+		//d(__LINE__,__FILE__,$subLinks,'$subLinks');
+		
+		foreach($subLinks as $sublink)
+		{
+			$ch = new Chapter;
+			$ch->setAttributes(array(
+				'tutorial_id' => $this->id,
+				'name' => $sublink['text'],
+				'link' => $sublink['link'],
+			));
+			if(!$ch->save())
+			{
+				throw new Exception("Error saving chapter: " . 
+					var_export($ch->getErrors(),true));
+			}
+		}
+		
+		return true;
 	}	
 	
 	
@@ -118,10 +145,13 @@ class Tutorial extends CActiveRecord
 	 */
 	public function save()
 	{
+		if(!parent::save())
+		{
+			throw new Exception("Error saving Tutorial: " .
+				var_export($this->getErrors(),true));
+		}
 		$this->tutorialWebCrawler($this->link);
-		parent::save();
+		
+		return true; //if not exception is thrown returns true
 	}
-	
-	
-
 }

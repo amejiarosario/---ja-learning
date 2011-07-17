@@ -171,7 +171,7 @@ class WebCrawler {
 	/**
 	 * @return an array with the keys 'name' and 'links' of the sublinks
 	 */
-	public function getATagsWithSubLinks($HtmlCode = '')
+	public function getSubLinks($HtmlCode = '')
 	{
 		$subLinks = array();
 		
@@ -201,7 +201,7 @@ class WebCrawler {
 					strpos($linkUrl['path'][0],$this->getPath()) === 0
 					)  
 				{	
-					$subLinks[] = array('name'=>$aTags['text'][$x], 'link'=> $aTags['link'][$x]);
+					$subLinks[] = array('text'=>$aTags['text'][$x], 'link'=> $aTags['link'][$x]);
 				} 
 			}
 			

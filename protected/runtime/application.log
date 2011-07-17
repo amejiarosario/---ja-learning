@@ -85,3 +85,58 @@ REQUEST_URI=/ninjalearning/
 in /var/www/ninjalearning/protected/views/site/index.php (7)
 in /var/www/ninjalearning/protected/controllers/SiteController.php (32)
 in /var/www/ninjalearning/index.php (13)
+2011/07/13 23:38:11 [error] [php] Undefined index: text (/var/www/ninjalearning/protected/models/Tutorial.php:123)
+Stack trace:
+#0 /var/www/yii/framework/web/actions/CInlineAction.php(50): TutorialController->actionCreate()
+#1 /var/www/yii/framework/web/CController.php(300): CInlineAction->runWithParams()
+#2 /var/www/yii/framework/web/filters/CFilterChain.php(134): TutorialController->runAction()
+#3 /var/www/yii/framework/web/filters/CFilter.php(41): CFilterChain->run()
+#4 /var/www/yii/framework/web/CController.php(1144): CAccessControlFilter->filter()
+#5 /var/www/yii/framework/web/filters/CInlineFilter.php(59): TutorialController->filterAccessControl()
+#6 /var/www/yii/framework/web/filters/CFilterChain.php(131): CInlineFilter->filter()
+#7 /var/www/yii/framework/web/CController.php(283): CFilterChain->run()
+#8 /var/www/yii/framework/web/CController.php(257): TutorialController->runActionWithFilters()
+#9 /var/www/yii/framework/web/CWebApplication.php(277): TutorialController->run()
+#10 /var/www/yii/framework/web/CWebApplication.php(136): CWebApplication->runController()
+#11 /var/www/yii/framework/base/CApplication.php(158): CWebApplication->processRequest()
+#12 /var/www/ninjalearning/index.php(13): CWebApplication->run()
+REQUEST_URI=/ninjalearning/index.php?r=tutorial/create
+in /var/www/ninjalearning/protected/models/Tutorial.php (123)
+in /var/www/ninjalearning/protected/models/Tutorial.php (137)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (74)
+2011/07/13 23:44:44 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "chapters".' in /var/www/yii/framework/web/CWebApplication.php:281
+Stack trace:
+#0 /var/www/yii/framework/web/CWebApplication.php(136): CWebApplication->runController('chapters')
+#1 /var/www/yii/framework/base/CApplication.php(158): CWebApplication->processRequest()
+#2 /var/www/ninjalearning/index.php(13): CApplication->run()
+#3 {main} REQUEST_URI=/ninjalearning/index.php?r=chapters
+2011/07/13 23:45:16 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "chapters".' in /var/www/yii/framework/web/CWebApplication.php:281
+Stack trace:
+#0 /var/www/yii/framework/web/CWebApplication.php(136): CWebApplication->runController('chapters')
+#1 /var/www/yii/framework/base/CApplication.php(158): CWebApplication->processRequest()
+#2 /var/www/ninjalearning/index.php(13): CApplication->run()
+#3 {main} REQUEST_URI=/ninjalearning/index.php?r=chapters
+2011/07/13 23:56:10 [error] [php] file_get_contents(http://www.yiiframework.com/doc/guide/) [<a href='function.file-get-contents'>function.file-get-contents</a>]: failed to open stream: HTTP request failed! HTTP/1.1 400 Bad Request
+ (/var/www/ninjalearning/protected/models/WebCrawler.php:101)
+Stack trace:
+#0 /var/www/ninjalearning/protected/models/WebCrawler.php(179): WebCrawler->getATags()
+#1 /var/www/ninjalearning/protected/models/Tutorial.php(117): WebCrawler->getSubLinks()
+#2 /var/www/ninjalearning/protected/models/Tutorial.php(150): Tutorial->tutorialWebCrawler()
+#3 /var/www/ninjalearning/protected/controllers/TutorialController.php(74): Tutorial->save()
+#4 /var/www/yii/framework/web/actions/CInlineAction.php(50): TutorialController->actionCreate()
+#5 /var/www/yii/framework/web/CController.php(300): CInlineAction->runWithParams()
+#6 /var/www/yii/framework/web/filters/CFilterChain.php(134): TutorialController->runAction()
+#7 /var/www/yii/framework/web/filters/CFilter.php(41): CFilterChain->run()
+#8 /var/www/yii/framework/web/CController.php(1144): CAccessControlFilter->filter()
+#9 /var/www/yii/framework/web/filters/CInlineFilter.php(59): TutorialController->filterAccessControl()
+#10 /var/www/yii/framework/web/filters/CFilterChain.php(131): CInlineFilter->filter()
+#11 /var/www/yii/framework/web/CController.php(283): CFilterChain->run()
+#12 /var/www/yii/framework/web/CController.php(257): TutorialController->runActionWithFilters()
+#13 /var/www/yii/framework/web/CWebApplication.php(277): TutorialController->run()
+#14 /var/www/yii/framework/web/CWebApplication.php(136): CWebApplication->runController()
+#15 /var/www/yii/framework/base/CApplication.php(158): CWebApplication->processRequest()
+#16 /var/www/ninjalearning/index.php(13): CWebApplication->run()
+REQUEST_URI=/ninjalearning/index.php?r=tutorial/create
+in /var/www/ninjalearning/protected/models/WebCrawler.php (101)
+in /var/www/ninjalearning/protected/models/WebCrawler.php (133)
+in /var/www/ninjalearning/protected/models/WebCrawler.php (179)
