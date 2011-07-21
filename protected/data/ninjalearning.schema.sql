@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS `tbl_chapters` (
   `tutorial_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `link` varchar(255) NOT NULL,
-  `accessed` date NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `accessed` date ,
+  `created_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS `tbl_tutorials` (
   `user_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `link` varchar(255) NOT NULL,
-  `accessed` date NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `accessed` date,
+  `created_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `tbl_users` (
   `email` varchar(128) NOT NULL,
   `name` varchar(128) DEFAULT NULL,
   `lastname` varchar(128) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `created_at` timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
