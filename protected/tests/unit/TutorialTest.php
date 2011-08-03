@@ -5,6 +5,7 @@ class TutorialTest extends CDbTestCase
 	public $fixtures = array(
 		'users' => 'User',
 		'tutorials' => 'Tutorial',
+		'tutorialUserAssignment' => ':tbl_tutorials_users'
 	);
 	
 	public function testCreate()

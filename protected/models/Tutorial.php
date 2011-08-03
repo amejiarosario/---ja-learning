@@ -45,7 +45,7 @@ class Tutorial extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('user_id, name, link, accessed, created_at', 'required'),
+			array('user_id, name, link', 'required'),
 			array('user_id', 'numerical', 'integerOnly'=>true),
 			array('name, link', 'length', 'max'=>255),
 			// The following rule is used by search().
@@ -145,6 +145,8 @@ class Tutorial extends CActiveRecord
 	 */
 	public function save()
 	{
+		$this->user_id = 1; // TODO take logged in user, instead of harcoded one.
+		
 		if(!parent::save())
 		{
 			throw new Exception("Error saving Tutorial: " .

@@ -140,3 +140,75 @@ REQUEST_URI=/ninjalearning/index.php?r=tutorial/create
 in /var/www/ninjalearning/protected/models/WebCrawler.php (101)
 in /var/www/ninjalearning/protected/models/WebCrawler.php (133)
 in /var/www/ninjalearning/protected/models/WebCrawler.php (179)
+2011/08/03 15:14:16 [error] [exception.Exception] exception 'Exception' with message 'Error saving Tutorial: array (
+  'user_id' => 
+  array (
+    0 => 'User cannot be blank.',
+  ),
+)' in /var/www/ninjalearning/protected/models/Tutorial.php:150
+Stack trace:
+#0 /var/www/ninjalearning/protected/controllers/TutorialController.php(74): Tutorial->save()
+#1 /var/www/yii/framework/web/actions/CInlineAction.php(50): TutorialController->actionCreate()
+#2 /var/www/yii/framework/web/CController.php(300): CInlineAction->runWithParams(Array)
+#3 /var/www/yii/framework/web/filters/CFilterChain.php(134): CController->runAction(Object(CInlineAction))
+#4 /var/www/yii/framework/web/filters/CFilter.php(41): CFilterChain->run()
+#5 /var/www/yii/framework/web/CController.php(1144): CFilter->filter(Object(CFilterChain))
+#6 /var/www/yii/framework/web/filters/CInlineFilter.php(59): CController->filterAccessControl(Object(CFilterChain))
+#7 /var/www/yii/framework/web/filters/CFilterChain.php(131): CInlineFilter->filter(Object(CFilterChain))
+#8 /var/www/yii/framework/web/CController.php(283): CFilterChain->run()
+#9 /var/www/yii/framework/web/CController.php(257): CController->runActionWithFilters(Object(CInlineAction), Array)
+#10 /var/www/yii/framework/web/CWebApplication.php(277): CController->run('create')
+#11 /var/www/yii/framework/web/CWebApplication.php(136): CWebApplication->runController('tutorial/create')
+#12 /var/www/yii/framework/base/CApplication.php(158): CWebApplication->processRequest()
+#13 /var/www/ninjalearning/index.php(13): CApplication->run()
+#14 {main} REQUEST_URI=/ninjalearning/index.php?r=tutorial/create
+2011/08/03 15:16:09 [error] [exception.Exception] exception 'Exception' with message 'Error saving Tutorial: array (
+  'accessed' => 
+  array (
+    0 => 'Accessed cannot be blank.',
+  ),
+  'created_at' => 
+  array (
+    0 => 'Created At cannot be blank.',
+  ),
+)' in /var/www/ninjalearning/protected/models/Tutorial.php:152
+Stack trace:
+#0 /var/www/ninjalearning/protected/controllers/TutorialController.php(74): Tutorial->save()
+#1 /var/www/yii/framework/web/actions/CInlineAction.php(50): TutorialController->actionCreate()
+#2 /var/www/yii/framework/web/CController.php(300): CInlineAction->runWithParams(Array)
+#3 /var/www/yii/framework/web/filters/CFilterChain.php(134): CController->runAction(Object(CInlineAction))
+#4 /var/www/yii/framework/web/filters/CFilter.php(41): CFilterChain->run()
+#5 /var/www/yii/framework/web/CController.php(1144): CFilter->filter(Object(CFilterChain))
+#6 /var/www/yii/framework/web/filters/CInlineFilter.php(59): CController->filterAccessControl(Object(CFilterChain))
+#7 /var/www/yii/framework/web/filters/CFilterChain.php(131): CInlineFilter->filter(Object(CFilterChain))
+#8 /var/www/yii/framework/web/CController.php(283): CFilterChain->run()
+#9 /var/www/yii/framework/web/CController.php(257): CController->runActionWithFilters(Object(CInlineAction), Array)
+#10 /var/www/yii/framework/web/CWebApplication.php(277): CController->run('create')
+#11 /var/www/yii/framework/web/CWebApplication.php(136): CWebApplication->runController('tutorial/create')
+#12 /var/www/yii/framework/base/CApplication.php(158): CWebApplication->processRequest()
+#13 /var/www/ninjalearning/index.php(13): CApplication->run()
+#14 {main} REQUEST_URI=/ninjalearning/index.php?r=tutorial/create
+2011/08/03 15:17:55 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "c".' in /var/www/yii/framework/web/CWebApplication.php:281
+Stack trace:
+#0 /var/www/yii/framework/web/CWebApplication.php(136): CWebApplication->runController('c')
+#1 /var/www/yii/framework/base/CApplication.php(158): CWebApplication->processRequest()
+#2 /var/www/ninjalearning/index.php(13): CApplication->run()
+#3 {main} REQUEST_URI=/ninjalearning/index.php?r=c
+2011/08/03 15:17:55 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "ch".' in /var/www/yii/framework/web/CWebApplication.php:281
+Stack trace:
+#0 /var/www/yii/framework/web/CWebApplication.php(136): CWebApplication->runController('ch')
+#1 /var/www/yii/framework/base/CApplication.php(158): CWebApplication->processRequest()
+#2 /var/www/ninjalearning/index.php(13): CApplication->run()
+#3 {main} REQUEST_URI=/ninjalearning/index.php?r=ch
+2011/08/03 15:17:55 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "chap".' in /var/www/yii/framework/web/CWebApplication.php:281
+Stack trace:
+#0 /var/www/yii/framework/web/CWebApplication.php(136): CWebApplication->runController('chap')
+#1 /var/www/yii/framework/base/CApplication.php(158): CWebApplication->processRequest()
+#2 /var/www/ninjalearning/index.php(13): CApplication->run()
+#3 {main} REQUEST_URI=/ninjalearning/index.php?r=chap
+2011/08/03 15:17:56 [error] [exception.CHttpException.404] exception 'CHttpException' with message 'Unable to resolve the request "chapters".' in /var/www/yii/framework/web/CWebApplication.php:281
+Stack trace:
+#0 /var/www/yii/framework/web/CWebApplication.php(136): CWebApplication->runController('chapters')
+#1 /var/www/yii/framework/base/CApplication.php(158): CWebApplication->processRequest()
+#2 /var/www/ninjalearning/index.php(13): CApplication->run()
+#3 {main} REQUEST_URI=/ninjalearning/index.php?r=chapters
