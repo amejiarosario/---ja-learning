@@ -16,7 +16,7 @@ return array(
 		'tutorial2' => array(
 			'user_id' => 1,
 			'name' => $name.'2',
-			'link' => $link.'/doc',
+			'link' => $link.'doc',
 			'accessed' => '1986-01-01 00:00:00',
 			'created_at' => $time,		
 		),	

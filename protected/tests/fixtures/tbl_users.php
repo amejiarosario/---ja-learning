@@ -18,14 +18,14 @@
 	return array(
 		'user1' => array(
 			'username' => 'adrian',
-			'password' => 'recrins',
+			'password' => MD5('recrins'),
 			'email' => 'adriansky@gmail.com',
 			'name' => 'Adrian',
 			'lastname' => 'Mejia',
 		),
 		'user2' => array(
 			'username' => 'reina',
-			'password' => 'carly93',
+			'password' => MD5('carly93'),
 			'email' => 'reinacrf@gmail.com',
 			'name' => 'Reina',
 			'lastname' => 'Rosario',
