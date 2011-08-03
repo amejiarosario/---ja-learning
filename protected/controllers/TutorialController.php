@@ -50,8 +50,19 @@ class TutorialController extends Controller
 	 */
 	public function actionView($id)
 	{
+		$chapterDataProvider = new CActiveDataProvider('Chapter', array(
+			'criteria' => array(
+				'condition' => 'tutorial_id=:tutorialId',
+				'params' => array(':tutorialId' => $this->loadModel($id)->id),
+			),
+			'pagination' => array(
+				'pageSize' => 10,
+			),
+		));
+	
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
+			'chapterDataProvider' => $chapterDataProvider,
 		));
 	}
 
