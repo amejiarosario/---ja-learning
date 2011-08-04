@@ -191,6 +191,37 @@ HTML;
 		$this->assertEquals("/doc/guide/",$chap[0]['link']);
 		$this->assertEquals("Guide",$chap[0]['text']);
 	}
-}
+	
+	function testWithYiiTutorial()
+	{
+		//$w = new WebCrawler("http://www.yiiframework.com/doc/guide/1.1/en/"); // same
+		$w = new WebCrawler("http://www.yiiframework.com/doc/guide/1.1/en"); 
+		$chap = $w->getSubLinks();
+		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
+		$this->assertTrue(count($chap) > 20);
+		
+		$this->assertNotContains("/doc/guide/", $it);
+		$this->assertNotContains("/doc/guide/1.1/zh_cn/index", $it);
+		$this->assertNotContains("/doc/guide/1.1/ja/index", $it);
+	}
+	
+	function testWithQnxTutorial()
+	{
+		//$w = new WebCrawler("http://www.yiiframework.com/doc/guide/1.1/en/"); // same
+		$w = new WebCrawler("http://www.qnx.com/developers/docs/6.4.1/neutrino/bookset.html"); 
+		$chap = $w->getSubLinks();
+		
+		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
 
+		// assertions
+		$this->assertTrue(count($chap) > 11);
+		
+		$this->assertContains("System Architecture", $it);		
+		$this->assertContains("./sys_arch/about.html", $it);
+		
+		$this->assertContains("User's Guide",$it);
+		$this->assertContains("./user_guide/about.html", $it);
+		
+	}
+}
 ?>

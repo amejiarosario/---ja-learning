@@ -32,5 +32,5 @@ $this->widget('zii.widgets.CDetailView', array(
 <h1>Chapters:</h1>
 <?php $this->widget('zii.widgets.CListView',array(
 	'dataProvider' => $chapterDataProvider,
-	'itemView' => '/chapter/_view',
+	'itemView' => '/chapter/_view2',
 )); ?>

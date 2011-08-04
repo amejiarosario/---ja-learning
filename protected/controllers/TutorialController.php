@@ -56,7 +56,7 @@ class TutorialController extends Controller
 				'params' => array(':tutorialId' => $this->loadModel($id)->id),
 			),
 			'pagination' => array(
-				'pageSize' => 10,
+				'pageSize' => 25,
 			),
 		));
 	
