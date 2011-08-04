@@ -62,8 +62,8 @@ class Tutorial extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'chapters' => array(self::HAS_MANY, 'Chapters', 'tutorial_id'),
-			'user' => array(self::BELONGS_TO, 'Users', 'user_id'),
+			'chapters' => array(self::HAS_MANY, 'Chapter', 'tutorial_id'),
+			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
 		);
 	}
 

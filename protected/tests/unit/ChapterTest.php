@@ -2,6 +2,20 @@
 
 class ChapterTest extends CDbTestCase
 {
+	public $fixtures = array(
+		'users' => 'User',
+		'chapters' => 'Chapter',
+		//'tutorials' => 'Tutorial',
+	);
+	
+	public function testGetTutorialName()
+	{
+		$this->assertTrue($this->chapters('chap1')->getProjectName() == 'Qnx Tutorial (test fixture)');
+		$this->assertTrue($this->chapters('chap2')->getProjectName() == 'Stella Test2');
+		$this->assertTrue($this->chapters('chap3')->getProjectName() == 'Stella Test');
+	}
+
+	//** placeholder of a test 
 	public function testCRUD()
 	{
 		// vars

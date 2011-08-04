@@ -23,8 +23,6 @@ class WebCrawlerTest extends CTestCase
 		$url3 = "regexpal.com"; // non-http, non-www, non-path or file
 		$url4 = "/scripts/regex/"; // no domain, just path
 		$url5 = ""; //nothing
-		
-		
 	
 		$w = new WebCrawler($url1);
 		//*
@@ -214,14 +212,14 @@ HTML;
 		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
 
 		// assertions
-		$this->assertTrue(count($chap) > 11);
+		$this->assertTrue(count($chap) > 10);
 		
 		$this->assertContains("System Architecture", $it);		
 		$this->assertContains("./sys_arch/about.html", $it);
 		
 		$this->assertContains("User's Guide",$it);
 		$this->assertContains("./user_guide/about.html", $it);
-		
 	}
 }
+
 ?>

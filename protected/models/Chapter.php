@@ -16,6 +16,9 @@
  */
 class Chapter extends CActiveRecord
 {
+
+	private $_projectName = null;
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Chapter the static model class
@@ -31,6 +34,11 @@ class Chapter extends CActiveRecord
 	public function tableName()
 	{
 		return 'tbl_chapters';
+	}
+	
+	public function getProjectName()
+	{
+		return $this->tutorial->name;
 	}
 
 	/**
@@ -58,7 +66,7 @@ class Chapter extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'tutorial' => array(self::BELONGS_TO, 'Tutorials', 'tutorial_id'),
+			'tutorial' => array(self::BELONGS_TO, 'Tutorial', 'tutorial_id'),
 		);
 	}
 
