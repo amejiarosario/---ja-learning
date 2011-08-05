@@ -38,7 +38,7 @@ class WebCrawlerTest extends CTestCase
 		
 		$w->setHref($url3);
 		$this->assertEquals("regexpal.com", $w->getHost());
-		$this->assertEquals("", $w->getPath());
+		$this->assertEquals("/", $w->getPath());
 		$this->assertEquals("", $w->getFile());
 		
 		$w->setHref($url4);
@@ -47,7 +47,7 @@ class WebCrawlerTest extends CTestCase
 		
 		$w->setHref($url5);
 		$this->assertEquals("", $w->getHost());
-		$this->assertEquals("", $w->getPath());
+		$this->assertEquals("/", $w->getPath());
 		$this->assertEquals("", $w->getFile());
 		
 		$w->setHref('ftp://www.adrian-mejia.com/dir/index.php?r=module/site/index#week3');
@@ -236,6 +236,7 @@ CODE;
 		//$w = new WebCrawler("http://www.yiiframework.com/doc/guide/1.1/en/"); // same
 		$w = new WebCrawler("http://www.qnx.com/developers/docs/6.4.1/neutrino/bookset.html"); 
 		$chap = $w->getSubLinks();
+		//d(__LINE__,__FILE__, $chap, '$chap');
 		
 		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
 
@@ -243,10 +244,12 @@ CODE;
 		$this->assertTrue(count($chap) > 10);
 		
 		$this->assertContains("System Architecture", $it);		
-		$this->assertContains("./sys_arch/about.html", $it);
+		$this->assertNotContains("./sys_arch/about.html", $it);
+		$this->assertContains("/developers/docs/6.4.1/neutrino/sys_arch/about.html", $it);
 		
 		$this->assertContains("User's Guide",$it);
-		$this->assertContains("./user_guide/about.html", $it);
+		$this->assertNotContains("./user_guide/about.html", $it);
+		$this->assertContains("/developers/docs/6.4.1/neutrino/user_guide/about.html", $it);
 	}
 }
 

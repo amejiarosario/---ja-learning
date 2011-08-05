@@ -171,6 +171,10 @@ class WebCrawler {
 		$this->_path = $url['path'][0];
 		$this->_file = $url['file'][0];
 		$this->_query = $url['query'][0];	
+
+		// add '/' default path if not present
+		if($this->_path === "")
+			$this->_path = "/";
 	}
 
 	/**
@@ -186,44 +190,29 @@ class WebCrawler {
 		// 2. return only the ones that are in the same domain+path or deeper
 		for($x=0; $x < count($aTags['link']); $x++)
 		{
+			// all path should with '/'
+			//if(strrpos($this->getPath()) === strlen($this->getPath())-1)
+			
+			// get equivalent link
+			if(strpos($aTags['link'][$x],".") === 0)
+				$aTags['link'][$x] = $this->getPath() . $aTags['link'][$x];
+				
+			// remove double slashes
+			$aTags['link'][$x] = str_replace("/./","/",$aTags['link'][$x]); 
+			$aTags['link'][$x] = str_replace("./","/",$aTags['link'][$x]); 
+			
 			$linkUrl = $this->getUrlElements($aTags['link'][$x]);
-			//d(__LINE__,__FILE__, $linkUrl, '$linkUrl');
-			
-			$equivalent_path = "";
-			
-			// add '/' default path if not present
-			if($this->getPath() === "")
-				$equivalent_path = "/";
-			else
-				$equivalent_path = $this->getPath();
-			
-			$samePath = false;
-			
+		
 			// if domains are equals
 			if($this->getHost() === $linkUrl['domain'][0] || $linkUrl['domain'][0] === "" ) 
 			{
 				// if there is not path in the domain, all the links' path are inside 
-				if(	$equivalent_path === "/" || 
-					strpos($linkUrl['path'][0],$equivalent_path) === 0 )  
+				if(	$this->getPath() === "/" || 
+					strpos($linkUrl['path'][0],$this->getPath()) === 0 )  
 				{	
 					$subLinks[] = array('text'=>$aTags['text'][$x], 'link'=> $aTags['link'][$x]);
 				} 
 			}
-			
-			/*
-			if($this->getPath() === $linkUrl['path'][0] ) // equal path
-				$samePath = true;
-			else if($this->getPath() === "" || $linkUrl['path'][0] === "")
-				$samePath = false;
-			else if(strpos($linkUrl['path'][0],$equivalent_path) > -1) // deeper
-				$samePath = true;
-
-			// check that the links are in the tut's path or deeper
-			if ( $samePath && ( $linkUrl['domain'][0]==="" || ($this->getHost() === $linkUrl['domain'][0])) ) 
-			{
-				
-			}
-			*/
 		}
 		
 		return $subLinks;
