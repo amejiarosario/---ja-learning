@@ -36,7 +36,6 @@ class ChapterTest extends CDbTestCase
 		));
 		//$tut->save();
 		$this->assertTrue($tut->save());
-	
 		
 		//-----------
 		// test Create

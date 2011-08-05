@@ -138,7 +138,7 @@ class WebCrawler {
 	
 	/**
 	 * Parse the URL address into its parts.
-	 * @return multi-dimensional array: 
+	 * @return multi-dimensional array (all matches): 
 	 *		[0] link (complete match)
 	 * 		[1] schema (http,ftp,...); 
 	 * 		[2] domain/host; 
@@ -151,8 +151,13 @@ class WebCrawler {
 		// get file and query
 		// (\w+\.\w+)([^.]*)$
 		
+		// old -  problem: get confused with dots in paths. e.g. http://www.yiiframework.com/doc/guide/1.1/en
+		//%^(?:(https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?(.*?)?(?:(\w+\.\w+)([^.]*))?$%i
 		
-		$arr = $this->regex('%^(?:(https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?(.*?)?(?:(\w+\.\w+)([^.]*))?$%i', $url);
+		// new version
+		//^(?:(https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?(.*?)?(?:(\w+\.\w+)((?:#|\?|$)(?:[^.]*)))?$
+		
+		$arr = $this->regex('%^(?:(https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?(.*?)?(?:(\w+\.\w+)((?:#|\?|$)(?:[^.]*)))?$%i', $url);
 		return array('link' => $arr[0], 'schema'=>$arr[1], 'domain'=>$arr[2], 'path'=>$arr[3], 'file'=>$arr[4], 'query'=>$arr[5]);
 	}
 	
@@ -182,13 +187,15 @@ class WebCrawler {
 		for($x=0; $x < count($aTags['link']); $x++)
 		{
 			$linkUrl = $this->getUrlElements($aTags['link'][$x]);
+			//d(__LINE__,__FILE__, $linkUrl, '$linkUrl');
+			
 			$equivalent_path = "";
-					
-			if($this->getPath() == "")
+			
+			// add '/' default path if not present
+			if($this->getPath() === "")
 				$equivalent_path = "/";
 			else
 				$equivalent_path = $this->getPath();
-
 			
 			$samePath = false;
 			
@@ -196,10 +203,8 @@ class WebCrawler {
 			if($this->getHost() === $linkUrl['domain'][0] || $linkUrl['domain'][0] === "" ) 
 			{
 				// if there is not path in the domain, all the links' path are inside 
-				if(	$this->getPath() === "" || 
-					$this->getPath() === "/" || 
-					strpos($linkUrl['path'][0],$this->getPath()) === 0
-					)  
+				if(	$equivalent_path === "/" || 
+					strpos($linkUrl['path'][0],$equivalent_path) === 0 )  
 				{	
 					$subLinks[] = array('text'=>$aTags['text'][$x], 'link'=> $aTags['link'][$x]);
 				} 

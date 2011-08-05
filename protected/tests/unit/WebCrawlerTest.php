@@ -76,6 +76,13 @@ class WebCrawlerTest extends CTestCase
 		$this->assertEquals("www.adrian-mejia.com", $url['domain'][0]); // domain
 		$this->assertEquals("/", $url['path'][0]); // path		
 		
+		//http://www.yiiframework.com/doc/guide/1.1/en
+		$w->setHref('http://www.yiiframework.com/doc/guide/1.1/en');
+		$this->assertEquals("www.yiiframework.com", $w->getHost());
+		$this->assertEquals("/doc/guide/1.1/en", $w->getPath());
+		$this->assertEquals("", $w->getFile());
+		$this->assertEquals("", $w->getQuery());
+		
 	}
 	
 	function testGetATags()
@@ -190,11 +197,32 @@ HTML;
 		$this->assertEquals("Guide",$chap[0]['text']);
 	}
 	
+	function testGetSubLinksWithYiiTutorial()
+	{
+		$w = new WebCrawler("http://www.yiiframework.com/doc/guide/1.1/en");
+		
+		$code = <<<CODE
+		<a href="/demos/">Demos</a>
+		<a href="/doc/guide/">Guide</a>
+		<a href="/doc/guide/1.1/en/upgrade">Upgrading from 1.0 to 1.1</a>
+CODE;
+		
+		$chap = $w->getSubLinks($code);
+		$it = new RecursiveIteratorIterator(new RecursiveArrayIterator($chap));
+	
+		$this->assertTrue(count($chap) === 1);
+		$this->assertContains("/doc/guide/1.1/en/upgrade", $it);
+		$this->assertNotContains("/doc/guide/", $it);
+		$this->assertNotContains("/demos/", $it);
+		
+	}
+	
 	function testWithYiiTutorial()
 	{
 		//$w = new WebCrawler("http://www.yiiframework.com/doc/guide/1.1/en/"); // same
 		$w = new WebCrawler("http://www.yiiframework.com/doc/guide/1.1/en"); 
 		$chap = $w->getSubLinks();
+		//var_export($chap);
 		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
 		$this->assertTrue(count($chap) > 20);
 		
