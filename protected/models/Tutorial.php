@@ -116,6 +116,7 @@ class Tutorial extends CActiveRecord
 		// Save all the chapter of the a link
 		$w = new WebCrawler($website);
 		$subLinks = $w->getSubLinks();
+		//$content = $w->getContent(); // TODO get content
 		
 		//echo Yii::trace(CVarDumper::dump(count($subLinks)),'$subLinks');
 		
@@ -128,6 +129,7 @@ class Tutorial extends CActiveRecord
 				'tutorial_id' => $this->id,
 				'name' => $sublink['text'],
 				'link' => $sublink['link'],
+				//'content' => $content, // TODO
 			));
 			if(!$ch->save())
 			{
@@ -139,7 +141,6 @@ class Tutorial extends CActiveRecord
 		return true;
 	}	
 	
-	
 	/**
 	 * Save tutorial and its chapters (doing web crawling)
 	 */
@@ -147,11 +148,14 @@ class Tutorial extends CActiveRecord
 	{
 		$this->user_id = 1; // TODO take logged in user, instead of harcoded one.
 		
+		// save tutorial in database
 		if(!parent::save())
 		{
 			throw new Exception("Error saving Tutorial: " .
 				var_export($this->getErrors(),true));
 		}
+		
+		// Do web crawlink of links and save them in chapters
 		$this->tutorialWebCrawler($this->link);
 		
 		return true; //if not exception is thrown returns true
