@@ -209,8 +209,11 @@ class WebCrawler {
 				// if there is not path in the domain, all the links' path are inside 
 				if(	$this->getPath() === "/" || 
 					strpos($linkUrl['path'][0],$this->getPath()) === 0 )  
-				{	
-					$subLinks[] = array('text'=>$aTags['text'][$x], 'link'=> $aTags['link'][$x]);
+				{
+					// strip html
+					$aTags['text'][$x] = strip_tags($aTags['text'][$x]);
+					if(strlen($aTags['text'][$x])>0)
+						$subLinks[] = array('text'=>$aTags['text'][$x], 'link'=> $aTags['link'][$x]);
 				} 
 			}
 		}
