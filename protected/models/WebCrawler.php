@@ -7,6 +7,11 @@ require_once('Utils.php');
  */
 class WebCrawler 
 {
+	/**
+	 * tutorial URL (schema+domain+path)
+	 */
+	public $root;
+	
 	private $_href;
 	private $_schema;
 	private $_hostname;
@@ -29,6 +34,7 @@ class WebCrawler
 	public function setHref($href)
 	{
 		$this->_href = $href;
+		unset($this->root);
 		unset($this->_hostname);
 		unset($this->_schema);
 		unset($this->_path);
@@ -59,7 +65,7 @@ class WebCrawler
 	public function getDomain() {return getHost();}
 	
 	/**
-	 * Get File	 
+	 * Get File	name (e.g. index.php)
 	 */	
 	public function getFile()
 	{
@@ -71,7 +77,7 @@ class WebCrawler
 	}
 	
 	/**
-	 * Get Query	 
+	 * Get Query string (e.g. ?pid=31&uid=1	)
 	 */	
 	public function getQuery()
 	{
@@ -107,64 +113,6 @@ class WebCrawler
 	}
 	
 	/**
-	 * Regular expression evaluator
-	 * @param $regex regular expression
-	 * @param $text text to apply the regex
-	 * @return multi array of results from the evaluation of the regular expression (RegEx)
-	 *
-	 */
-	public function regex($regex, $text='')
-	{
-		if(!isset($regex) || strlen($regex)<3)
-			throw new Exception('No regex string to evaluate.');
-		// espape values --> replace '\' for '\\' OR '/' for '.'; ''' for '\'';
-		preg_match_all($regex, $text, $result);
-		return $result;
-	}
-	
-	/**
-	 * @return a multidimentional array with the complete a tag [0], links [1] and text [2]. 
-	 *
-			e.g.[0] => Array ([0] => <a href="/doc/guide/1.1/en/changes">New Features</a>)
-			    [1] => Array ([0] => /doc/guide/1.1/en/changes)
-			    [2] => Array ([0] => New Features)
-	 * DONE handle (whitespaces) <a href = "http://www.adrianmejiarosario.com/tests2/" > fine </ a>
-	 */
-	public function getATags($HtmlCode='')
-	{
-		if(!isset($HtmlCode) || strlen($HtmlCode)<1)
-			$HtmlCode = $this->getSourceCode();	
-		$a = $this->regex('%<a\\s+href\\s*=\\s*(?:"|\')([^"\']*)[^>]*\\s*>((?:(?!</a>).)*)</a>%i', $HtmlCode);
-		return array('ahref'=>$a[0],'link'=>$a[1],'text'=>$a[2]);
- 
-	}
-	
-	/**
-	 * Parse the URL address into its parts.
-	 * @return multi-dimensional array (all matches): 
-	 *		[0] link (complete match)
-	 * 		[1] schema (http,ftp,...); 
-	 * 		[2] domain/host; 
-	 *		[3] path 
-	 *		[4] file
-	 *		[5] query
-	 */
-	public function getUrlElements($url)
-	{
-		// get file and query
-		// (\w+\.\w+)([^.]*)$
-		
-		// old -  problem: get confused with dots in paths. e.g. http://www.yiiframework.com/doc/guide/1.1/en
-		//%^(?:(https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?(.*?)?(?:(\w+\.\w+)([^.]*))?$%i
-		
-		// new version
-		//^(?:(https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?(.*?)?(?:(\w+\.\w+)((?:#|\?|$)(?:[^.]*)))?$
-		
-		$arr = $this->regex('%^(?:(https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?(.*?)?(?:(\w+\.\w+)((?:#|\?|$)(?:[^.]*)))?$%i', $url);
-		return array('link' => $arr[0], 'schema'=>$arr[1], 'domain'=>$arr[2], 'path'=>$arr[3], 'file'=>$arr[4], 'query'=>$arr[5]);
-	}
-	
-	/**
 	 * Identifies the domain and path of the given URL
 	 */
 	private function setUrlElements()
@@ -179,63 +127,24 @@ class WebCrawler
 		// add '/' default path if not present
 		if($this->_path === "")
 			$this->_path = "/";
+		
+		$this->root = $this->_schema . "://" . $this->_hostname . $this->_path;
 	}
-
+	
 	/**
-	 * @return an array with the keys 'name' and 'links' of the sublinks
+	 * Parse the URL address into its parts.
+	 * @return multi-dimensional array (all matches): 
+	 *		[0] link (complete match)
+	 * 		[1] schema (http,ftp,...); 
+	 * 		[2] domain/host (www.adrianmejiarosario.com)
+	 *		[3] path  (/test/)
+	 *		[4] file  (index.php)
+	 *		[5] query (?pid=12)
 	 */
-	public function getSubLinks($HtmlCode = '')
+	public function getUrlElements($url)
 	{
-		$subLinks = array();
-		
-		// 1. get all the A Tags
-		$aTags = $this->getATags($HtmlCode);
-		
-		// 2. return only the ones that are in the same domain+path or deeper
-		for($x=0; $x < count($aTags['link']); $x++)
-		{
-			// all path should with '/'
-			//if(strrpos($this->getPath()) === strlen($this->getPath())-1)
-			
-			// get equivalent link
-			if(strpos($aTags['link'][$x],".") === 0)
-				$aTags['link'][$x] = $this->getPath() . $aTags['link'][$x];
-				
-			// remove double slashes
-			$aTags['link'][$x] = str_replace("/./","/",$aTags['link'][$x]); 
-			$aTags['link'][$x] = str_replace("./","/",$aTags['link'][$x]); 
-			
-			$linkUrl = $this->getUrlElements($aTags['link'][$x]);
-		
-			// if domains are equals
-			if($this->getHost() === $linkUrl['domain'][0] || $linkUrl['domain'][0] === "" ) 
-			{
-				// if there is not path in the domain, all the links' path are inside 
-				if(	$this->getPath() === "/" || 
-					strpos($linkUrl['path'][0],$this->getPath()) === 0 )  
-				{
-					// strip html
-					$aTags['text'][$x] = strip_tags($aTags['text'][$x]);
-					if(strlen($aTags['text'][$x])>0)
-					{
-						// get the chapter content
-						$content = WebCrawler::getContent(
-							$this->_schema . '://' .
-							$this->getHost() .
-							$aTags['link'][$x]
-						); 
-						//*/
-						$subLinks[] = array(
-							'text'=>$aTags['text'][$x], 
-							'link'=> $aTags['link'][$x], 
-							'content' => $content,
-						);
-					}
-				} 
-			}
-		}
-		
-		return $subLinks;
+		$arr = $this->regex('%^(?:(https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?(.*?)?(?:(\w+\.\w+)((?:#|\?|$)(?:[^.]*)))?$%i', $url);
+		return array('link' => $arr[0], 'schema'=>$arr[1], 'domain'=>$arr[2], 'path'=>$arr[3], 'file'=>$arr[4], 'query'=>$arr[5]);
 	}
 	
 	/**
@@ -319,6 +228,84 @@ class WebCrawler
 			echo "other class";
 		}
 	}
+	
+	/**
+	  @return a multidimentional array with the complete a tag [0], links [1] and text [2]. 
+	 
+			e.g.[0] => Array ([0] => <a href="/doc/guide/1.1/en/changes">New Features</a>)
+			    [1] => Array ([0] => /doc/guide/1.1/en/changes)
+			    [2] => Array ([0] => New Features)
+	  DONE handle (whitespaces) <a href = "http://www.adrianmejiarosario.com/tests2/" > fine </ a>
+	 */
+	public function getATags($HtmlCode='')
+	{
+		if(!isset($HtmlCode) || strlen($HtmlCode)<1)
+			$HtmlCode = $this->getSourceCode();	
+		$a = $this->regex('%<a\\s+href\\s*=\\s*(?:"|\')([^"\']*)[^>]*\\s*>((?:(?!</a>).)*)</a>%i', $HtmlCode);
+		return array('ahref'=>$a[0],'link'=>$a[1],'text'=>$a[2]);
+ 
+	}
+	
+    /**
+	 * @return an array with the keys 'name' and 'links' of the sublinks
+	 */
+	public function getSubLinks($HtmlCode = '')
+	{
+		$subLinks = array();
+		
+		// 1. get all the A Tags
+		$aTags = $this->getATags($HtmlCode);
+		
+		// TODO-IMHERE: root = schema+domain+path; links= diff(root,link);
+		
+		// 2. return only the ones that are in the same domain+path or deeper
+		for($x=0; $x < count($aTags['link']); $x++)
+		{
+			// all path should with '/'
+			//if(strrpos($this->getPath()) === strlen($this->getPath())-1)
+			
+			// get equivalent link
+			if(strpos($aTags['link'][$x],".") === 0)
+				$aTags['link'][$x] = $this->getPath() . $aTags['link'][$x];
+				
+			// remove double slashes
+			$aTags['link'][$x] = str_replace("/./","/",$aTags['link'][$x]); 
+			$aTags['link'][$x] = str_replace("./","/",$aTags['link'][$x]); 
+			
+			$linkUrl = $this->getUrlElements($aTags['link'][$x]);
+		
+			// if domains are equals
+			if($this->getHost() === $linkUrl['domain'][0] || $linkUrl['domain'][0] === "" ) 
+			{
+				// if there is not path in the domain, all the links' path are inside 
+				if(	$this->getPath() === "/" || 
+					strpos($linkUrl['path'][0],$this->getPath()) === 0 )  
+				{
+					// strip html
+					$aTags['text'][$x] = strip_tags($aTags['text'][$x]);
+					if(strlen($aTags['text'][$x])>0)
+					{
+						// get the chapter content
+						$content = WebCrawler::getContent(
+							$this->_schema . '://' .
+							$this->getHost() .
+							$aTags['link'][$x]
+						); 
+						//*/
+						$subLinks[] = array(
+							'text'=>$aTags['text'][$x], 
+							'link'=> $aTags['link'][$x], 
+							'content' => $content,
+						);
+					}
+				} 
+			}
+		}
+		
+		return $subLinks;
+	}
+	
+	
 	
 } // end class
 
