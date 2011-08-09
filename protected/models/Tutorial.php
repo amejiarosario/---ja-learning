@@ -129,7 +129,7 @@ class Tutorial extends CActiveRecord
 				'tutorial_id' => $this->id,
 				'name' => $sublink['text'],
 				'link' => $sublink['link'],
-				//'content' => $content, // TODO
+				'content' => $sublink['content'],
 			));
 			if(!$ch->save())
 			{

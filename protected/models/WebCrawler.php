@@ -5,8 +5,10 @@ require_once('Utils.php');
 /**
  * Get the source code of a website and analize its components.
  */
-class WebCrawler {
+class WebCrawler 
+{
 	private $_href;
+	private $_schema;
 	private $_hostname;
 	private $_path;
 	private $_file;
@@ -28,6 +30,7 @@ class WebCrawler {
 	{
 		$this->_href = $href;
 		unset($this->_hostname);
+		unset($this->_schema);
 		unset($this->_path);
 		unset($this->_sourceCode);
 		unset($this->_file);
@@ -35,7 +38,7 @@ class WebCrawler {
 	}
 
 	/**
-	 * Get link
+	 * Get link (full)
 	 */	
 	public function getHref()
 	{
@@ -167,6 +170,7 @@ class WebCrawler {
 	private function setUrlElements()
 	{
 		$url = $this->getUrlElements($this->_href);
+		$this->_schema = $url['schema'][0];
 		$this->_hostname = $url['domain'][0];
 		$this->_path = $url['path'][0];
 		$this->_file = $url['file'][0];
@@ -213,13 +217,109 @@ class WebCrawler {
 					// strip html
 					$aTags['text'][$x] = strip_tags($aTags['text'][$x]);
 					if(strlen($aTags['text'][$x])>0)
-						$subLinks[] = array('text'=>$aTags['text'][$x], 'link'=> $aTags['link'][$x]);
+					{
+						// get the chapter content
+						$content = WebCrawler::getContent(
+							$this->_schema . '://' .
+							$this->getHost() .
+							$aTags['link'][$x]
+						); 
+						//*/
+						$subLinks[] = array(
+							'text'=>$aTags['text'][$x], 
+							'link'=> $aTags['link'][$x], 
+							'content' => $content,
+						);
+					}
 				} 
 			}
 		}
 		
 		return $subLinks;
 	}
-}
+	
+	/**
+	 * @url url to extract content
+	 * @title block of information to extract. 	
+	 * @return page content (text main content)
+	 */
+	public static function getContent($url, $title="")
+	{
+		// Load content
+		$html = file_get_contents($url);
+		//d(__LINE__,__FILE__,$html,'$html');
+		
+		$dom = new DOMDocument;
+		$dom->loadHTML($html);
+		//$dom->formatOutput = false;
+		$dom->preserveWhiteSpace = false;
+		//echo $dom->validate();
+		//echo $dom->saveHTML();
+		echo "\n---------------\n";
+
+		// Search chapter title in the content		
+		$body = $dom->getElementsByTagName('body')->item(0);
+		//WebCrawler::getChildren($body);
+		/*
+		for( $i=0; $i < $body->length; $i++ )
+		{
+			echo $body->item($i)->nodeName;
+			//echo " = " . $body->item($i)->nodeValue;
+			echo "\n";
+		}
+		*/
+		
+		// Extract the block where the title is
+		
+		$new = new DomDocument;
+		$new->appendChild($new->importNode($body, true));
+		$foo = $new->saveHTML();
+		$foo = trim($foo); 
+		//$foo = preg_replace( '/\s+/', ' ', $foo );
+		return $foo;
+		//return trim($new->saveHTML());
+		//return str_replace("\n","",$new->saveHTML());
+		//return $body->get_content();
+	} // end function
+	
+	public static function getChildren($node)
+	{
+		echo "\n".get_class($node);
+		
+		if($node instanceof DOMNodeList)
+		{
+			for($x = 0; $x < $node->length; $x++)
+			{
+				WebCrawler::getChildren($node->item($x));
+				/*
+				$node->item($x)->nodeName;
+				$node->item($x)->nodeValue;
+				*/
+			}
+		}
+		elseif($node instanceof DOMNode)
+		{
+			$children = $node->childNodes;
+			if($children->length > 0)
+			{
+				WebCrawler::getChildren($children);
+			}
+			else
+			{
+				///*
+				echo '<'.$node->nodeName.'>';
+				//echo $node->nodeValue;
+				echo '</'.$node->nodeName.'>';
+				echo "\n";
+				//*/			
+			}
+		}
+		else // DOMNode or DOMDocument
+		{
+			echo "other class";
+		}
+	}
+	
+} // end class
 
 ?>

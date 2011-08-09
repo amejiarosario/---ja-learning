@@ -251,6 +251,42 @@ CODE;
 		$this->assertNotContains("./user_guide/about.html", $it);
 		$this->assertContains("/developers/docs/6.4.1/neutrino/user_guide/about.html", $it);
 	}
+	
+	function testGetContent()
+	{
+		// TODO: copied from InterestedTest.php
+	}
+	
+	public function testStellaTutorial()
+	{
+		$url = "http://stella.se.rit.edu/tests/tutorial/index.html";
+		$w = new WebCrawler($url);
+		$l = $w->getSubLinks();
+		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($l));
+		
+		//d(__LINE__,__FILE__, $l, '$l');
+		
+		$this->assertTrue(count($l) === 3);
+		
+		// test link names
+		$this->assertArrayHasKey("text",$l[0]);
+		$this->assertContains("chap1",$it);
+		$this->assertContains("chap2",$it);
+		$this->assertContains("chap3",$it);
+		
+		// test links href
+		$this->assertArrayHasKey("link",$l[0]);
+		$this->assertContains("/tests/tutorial/chap1.html",$it);
+		$this->assertContains("/tests/tutorial/chap2.html",$it);
+		$this->assertContains("/tests/tutorial/chap3.html",$it);
+		
+		// test links content
+		$this->assertArrayHasKey("content",$l[0]);
+		$this->assertContains("<body><h1>Chap1</h1><p>this is some content.</p></body>",$it);
+		$this->assertContains("<body><h2>Chap2</h2><p>this is some content.</p></body>",$it);
+		$this->assertContains("<body><h3>Chap3</h3><p>this is some content.</p></body>",$it);		
+	}
+	
 }
 
 ?>
