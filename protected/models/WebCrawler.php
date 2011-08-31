@@ -163,7 +163,7 @@ class WebCrawler
 		)
 		{
 			$this->setUrlElements();
-			$url = $this->_schema.'://'.$this->_hostname.$surl['path'][0].'/'.$surl['file'][0];
+			$url = $this->_schema.$this->_hostname.$surl['path'][0].$surl['file'][0];
 		}
 	
 		// Load content
@@ -258,7 +258,7 @@ class WebCrawler
  	}
 	
     /**
-	 * @return an array with the keys 'name' and 'links' of the sublinks
+	 * @return an array with the keys 'name', 'links', and the 'content' of the sublinks
 	 */
 	public function getSubLinks($HtmlCode = '')
 	{
@@ -299,7 +299,13 @@ class WebCrawler
 					if(strlen($chapURLs['text'][$x])>0)
 					{
 						// get the chapter content, be aware that the $chapURLs['link'][$x] could have the a full URL.
-						$content = $this->getContent($chapURL['link'][0]); 
+						//try{
+							$content = $this->getContent($chapURL['link'][0]); 
+						/*
+						} catch(Exception $e) {
+							// TODO think in a way to handle this exception BETTER.
+							$content = $e->getMessage();
+						}
 						//*/
 					
 						// save the link (chapter)
