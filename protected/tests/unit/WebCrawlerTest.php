@@ -287,6 +287,31 @@ CODE;
 		$this->assertContains("<body><h3>Chap3</h3><p>this is some content.</p></body>",$it);		
 	}
 	
+	function testGetContentLinks()
+	{
+		$url = "http://www.adrianmejiarosario.com/";
+		$w = new WebCrawler($url);
+		
+		$link = "/content/ruby-rails-architectural-design";
+		$c = $w->getContent($link);
+		//d(__LINE__,__FILE__,$c,'$c');
+		$this->assertTrue(strlen($c)>100);
+		
+		$link = "http://www.adrianmejiarosario.com/content/ruby-rails-architectural-design";
+		$c = $w->getContent($link);
+		//d(__LINE__,__FILE__,$c,'$c');
+		$this->assertTrue(strlen($c)>100);
+		
+		$link = "www.adrianmejiarosario.com/content/ruby-rails-architectural-design";
+		$c = $w->getContent($link);
+		//d(__LINE__,__FILE__,$c,'$c');
+		$this->assertTrue(strlen($c)>100);
+		
+		$link = "";
+		$c = $w->getContent($link);
+		//d(__LINE__,__FILE__,$c,'$c');
+		$this->assertTrue(strlen($c)>100);
+	}
 }
 
 ?>

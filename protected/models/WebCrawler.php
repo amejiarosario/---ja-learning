@@ -29,7 +29,7 @@ class WebCrawler
 	}
 
 	/**
-	 * Set link
+	 * Set website elements
 	 */
 	public function setHref($href)
 	{
@@ -113,7 +113,7 @@ class WebCrawler
 	}
 	
 	/**
-	 * Identifies the domain and path of the given URL
+	 * Identifies the domain and path of the already given URL
 	 */
 	private function setUrlElements()
 	{
@@ -143,7 +143,7 @@ class WebCrawler
 	 */
 	public function getUrlElements($url)
 	{
-		$arr = $this->regex('%^(?:(https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?(.*?)?(?:(\w+\.\w+)((?:#|\?|$)(?:[^.]*)))?$%i', $url);
+		$arr = regex('%^((?:https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?(.*?)?(?:(\w+\.\w+)((?:#|\?|$)(?:[^.]*)))?$%i', $url);
 		return array('link' => $arr[0], 'schema'=>$arr[1], 'domain'=>$arr[2], 'path'=>$arr[3], 'file'=>$arr[4], 'query'=>$arr[5]);
 	}
 	
@@ -152,8 +152,20 @@ class WebCrawler
 	 * @title block of information to extract. 	
 	 * @return page content (text main content)
 	 */
-	public static function getContent($url, $title="")
+	public function getContent($url, $title="")
 	{
+	
+		echo ' L158 getContent.url = '.$url;
+		//validate URL
+		$surl = $this->getUrlElements($url);
+		if(	empty($surl['schema'][0]) || 
+			empty($surl['domain'][0]) 
+		)
+		{
+			$this->setUrlElements();
+			$url = $this->_schema.'://'.$this->_hostname.$surl['path'][0].'/'.$surl['file'][0];
+		}
+	
 		// Load content
 		$html = file_get_contents($url);
 		//d(__LINE__,__FILE__,$html,'$html');
@@ -241,10 +253,9 @@ class WebCrawler
 	{
 		if(!isset($HtmlCode) || strlen($HtmlCode)<1)
 			$HtmlCode = $this->getSourceCode();	
-		$a = $this->regex('%<a\\s+href\\s*=\\s*(?:"|\')([^"\']*)[^>]*\\s*>((?:(?!</a>).)*)</a>%i', $HtmlCode);
+		$a = regex('%<a\\s+href\\s*=\\s*(?:"|\')([^"\']*)[^>]*\\s*>((?:(?!</a>).)*)</a>%i', $HtmlCode);
 		return array('ahref'=>$a[0],'link'=>$a[1],'text'=>$a[2]);
- 
-	}
+ 	}
 	
     /**
 	 * @return an array with the keys 'name' and 'links' of the sublinks
@@ -254,47 +265,47 @@ class WebCrawler
 		$subLinks = array();
 		
 		// 1. get all the A Tags
-		$aTags = $this->getATags($HtmlCode);
+		$chapURLs = $this->getATags($HtmlCode);
 		
 		// TODO-IMHERE: root = schema+domain+path; links= diff(root,link);
 		
 		// 2. return only the ones that are in the same domain+path or deeper
-		for($x=0; $x < count($aTags['link']); $x++)
+		for($x=0; $x < count($chapURLs['link']); $x++)
 		{
 			// all path should with '/'
 			//if(strrpos($this->getPath()) === strlen($this->getPath())-1)
 			
 			// get equivalent link
-			if(strpos($aTags['link'][$x],".") === 0)
-				$aTags['link'][$x] = $this->getPath() . $aTags['link'][$x];
+			if(strpos($chapURLs['link'][$x],".") === 0) // if link starts with '.'  e.g. href="./index.html"
+				$chapURLs['link'][$x] = $this->getPath() . $chapURLs['link'][$x]; // subtitute '.' with current path
 				
 			// remove double slashes
-			$aTags['link'][$x] = str_replace("/./","/",$aTags['link'][$x]); 
-			$aTags['link'][$x] = str_replace("./","/",$aTags['link'][$x]); 
+			$chapURLs['link'][$x] = str_replace("/./","/",$chapURLs['link'][$x]); 
+			$chapURLs['link'][$x] = str_replace("./","/",$chapURLs['link'][$x]); 
 			
-			$linkUrl = $this->getUrlElements($aTags['link'][$x]);
+			$chapURL = $this->getUrlElements($chapURLs['link'][$x]);
 		
 			// if domains are equals
-			if($this->getHost() === $linkUrl['domain'][0] || $linkUrl['domain'][0] === "" ) 
+			if($this->getHost() === $chapURL['domain'][0] || $chapURL['domain'][0] === "" ) 
 			{
 				// if there is not path in the domain, all the links' path are inside 
 				if(	$this->getPath() === "/" || 
-					strpos($linkUrl['path'][0],$this->getPath()) === 0 )  
+					strpos($chapURL['path'][0],$this->getPath()) === 0 )  
 				{
-					// strip html
-					$aTags['text'][$x] = strip_tags($aTags['text'][$x]);
-					if(strlen($aTags['text'][$x])>0)
+					
+					$chapURLs['text'][$x] = strip_tags($chapURLs['text'][$x]); // strip html tags
+					
+					// if it has some content besides HTML tags save it, otherwise discard it.
+					if(strlen($chapURLs['text'][$x])>0)
 					{
-						// get the chapter content
-						$content = WebCrawler::getContent(
-							$this->_schema . '://' .
-							$this->getHost() .
-							$aTags['link'][$x]
-						); 
+						// get the chapter content, be aware that the $chapURLs['link'][$x] could have the a full URL.
+						$content = $this->getContent($chapURL['link'][0]); 
 						//*/
+					
+						// save the link (chapter)
 						$subLinks[] = array(
-							'text'=>$aTags['text'][$x], 
-							'link'=> $aTags['link'][$x], 
+							'text'=>$chapURLs['text'][$x], 
+							'link'=> $chapURLs['link'][$x], 
 							'content' => $content,
 						);
 					}

@@ -7,12 +7,29 @@
  * @return multi array of results from the evaluation of the regular expression (RegEx)
  *
  */
-function regex($regex, $text='')
+function regex($regex, $text="")
 {
-	if(!isset($regex) || strlen($regex)<3)
+	/*
+	d(__LINE__,__FILE__, $regex, '$regex');
+	d(__LINE__,__FILE__, $text, '$text');
+	//*/
+	if(empty($regex))
 		throw new Exception('No regex string to evaluate.');
 	// espape values --> replace '\' for '\\' OR '/' for '.'; ''' for '\'';
-	preg_match_all($regex, $text, $result);
+	
+	
+	try {
+		preg_match_all($regex, $text, $result);	
+	} catch(Exception $e){
+		echo 'exception: ', $e->getMessage(), "\n";
+		d(__LINE__,__FILE__, $regex, '$regex');
+		d(__LINE__,__FILE__, $text, '$text');
+		throw $e;	
+	}
+
+	
+	
+	
 	return $result;
 }
 
