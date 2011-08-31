@@ -155,7 +155,7 @@ class WebCrawler
 	public function getContent($url, $title="")
 	{
 	
-		echo ' L158 getContent.url = '.$url;
+		//echo ' L158 getContent.url = '.$url;
 		//validate URL
 		$surl = $this->getUrlElements($url);
 		if(	empty($surl['schema'][0]) || 
@@ -176,7 +176,7 @@ class WebCrawler
 		$dom->preserveWhiteSpace = false;
 		//echo $dom->validate();
 		//echo $dom->saveHTML();
-		echo "\n---------------\n";
+		//echo "\n---------------\n";
 
 		// Search chapter title in the content		
 		$body = $dom->getElementsByTagName('body')->item(0);
@@ -299,9 +299,9 @@ class WebCrawler
 					if(strlen($chapURLs['text'][$x])>0)
 					{
 						// get the chapter content, be aware that the $chapURLs['link'][$x] could have the a full URL.
-						//try{
+						try{
 							$content = $this->getContent($chapURL['link'][0]); 
-						/*
+						//*
 						} catch(Exception $e) {
 							// TODO think in a way to handle this exception BETTER.
 							$content = $e->getMessage();

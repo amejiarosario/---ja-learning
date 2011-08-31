@@ -17,6 +17,7 @@ class WebCrawlerTest extends CTestCase
 		$this->assertSame(true,true);
 	}
 	
+	// test regex url parser (get url elements)
 	function testGetUrlElements()
 	{
 		$url1 = "http://gskinner.com/RegExr/"; //with http, path and no-file
@@ -86,11 +87,12 @@ class WebCrawlerTest extends CTestCase
 		
 	}
 	
+	// test the url parser inside websites (find html A tags)
 	function testGetATags()
 	{
 		// testing with URL
 		$testurl = "http://stella.se.rit.edu/tests/index.html";
-		$testlinks = 12;
+		$testlinks = 13;
 		
 		$w = new WebCrawler($testurl);
 		$this->assertEquals($w->getHref(),$testurl);
@@ -127,24 +129,37 @@ HTML;
 			
 	}
 	
-	
-       function testGetATagsWithSubLinks()
-       {
-                $w = new WebCrawler("http://stella.se.rit.edu/tests/index.html");
-                $chap = $w->getSubLinks();
-                /*
-                d(__LINE__,$w->getHref(),'$w->getHref');
-                d(__LINE__,$chap,'$links');
-                */
-                $it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
-                $this->assertContains("http://stella.se.rit.edu/tests/index.html", $it);
-                $this->assertContains("/tests/index.html",$it);
-                $this->assertContains("/tests/path/to/index.html",$it);
-                
-                $this->assertEquals(3, count($chap));
-                                
-                
-                $sampleHTML =<<<HTML
+	// get the sublinks (chapters) and their contents!
+	function testGetATagsWithSubLinks()
+	{
+		$w = new WebCrawler("http://stella.se.rit.edu/tests/tutorial");
+		$chap = $w->getSubLinks();
+		//d(__LINE__,__FILE__,$chap,'$links');
+		
+		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
+		$this->assertContains("/tests/tutorial/chap1.html", $it);
+		$this->assertContains("/tests/tutorial/chap2.html",$it);
+		$this->assertContains("/tests/tutorial/chap3.html",$it);
+		$this->assertEquals(3, count($chap));
+		
+		// check $w->getSubLinks elements
+		
+		//get the tut's titles
+		$this->assertEquals("chap1", $chap[0]['text']);
+		$this->assertEquals("chap2", $chap[1]['text']);
+		$this->assertEquals("chap3", $chap[2]['text']);
+		// get the tut's links
+		$this->assertEquals("/tests/tutorial/chap1.html", $chap[0]['link']);
+		$this->assertEquals("/tests/tutorial/chap2.html", $chap[1]['link']);
+		$this->assertEquals("/tests/tutorial/chap3.html", $chap[2]['link']);	
+		// get the tut content
+		$this->assertEquals("<body><h1>Chap1</h1><p>this is some content.</p></body>", $chap[0]['content']);
+		$this->assertEquals("<body><h2>Chap2</h2><p>this is some content.</p></body>", $chap[1]['content']);
+		$this->assertEquals("<body><h3>Chap3</h3><p>this is some content.</p></body>", $chap[2]['content']);				
+		
+		// test inline code
+		
+		$sampleHTML =<<<HTML
 <a href="http://www.adrian.com/test/">true</a>
 <a href="/test/">true</a>
 <a href="/test/index.php">true</a>
@@ -155,50 +170,54 @@ HTML;
 <a href="http://www.google.com/test/index.html">false</a>
 <a href="http://www.google.com/test/path/to/index.html">false</a>
 HTML;
-                
-                $w->setHref("http://www.adrian.com/test/");
-                $links = $w->getSubLinks($sampleHTML);
-                
-                /*
-                d(__LINE__,$w->getHref(),'$w->getHref');
-                d(__LINE__,$links,'$links');
-                */
-                $it = new RecursiveIteratorIterator( new RecursiveArrayIterator($links));
-                $this->assertContains("/test/",$it);
-                $this->assertContains("/test/index.php",$it);
-                $this->assertContains("/test/path/to/",$it);
-                // TODO add more assertions
-                
-                $w->setHref("http://www.adrian.com");
-                
-                $links = $w->getATags($sampleHTML);
-                $it = new RecursiveIteratorIterator( new RecursiveArrayIterator($links));
-                
-                $this->assertContains("/test/",$it);
-                $this->assertContains("/test/index.php",$it);
-                $this->assertContains("/test/path/to/",$it);            
-                
-                $links = $w->getSubLinks($sampleHTML);
-                $it = new RecursiveIteratorIterator( new RecursiveArrayIterator($links));
+		
+		$w->setHref("http://www.adrian.com/test/");
+		$links = $w->getSubLinks($sampleHTML);
+		//d(__LINE__,__FILE__,$links,'$links');
+		
+		/*
+		d(__LINE__,$w->getHref(),'$w->getHref');
+		*/
+		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($links));
+		$this->assertContains("/test/",$it);
+		$this->assertContains("/test/index.php",$it);
+		$this->assertContains("/test/path/to/",$it);
+		// TODO add more assertions
+		
+		$w->setHref("http://www.adrian.com");
+		
+		$links = $w->getATags($sampleHTML);
+		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($links));
+		
+		$this->assertContains("/test/",$it);
+		$this->assertContains("/test/index.php",$it);
+		$this->assertContains("/test/path/to/",$it);            
+		
+		$links = $w->getSubLinks($sampleHTML);
+		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($links));
 
-                //d(__LINE__,__FILE__,$w->getHref(),'$w->getHref');
-                //d(__LINE__,__FILE__,$links,'$links');
-                
-                $this->assertEquals($w->getHref(),"http://www.adrian.com");
-                $this->assertContains("/test/",$it);
-                $this->assertContains("/test/index.php",$it);
-                $this->assertContains("/test/path/to/",$it);
-                // TODO add more assertions  
-                           
-        }
+		//d(__LINE__,__FILE__,$w->getHref(),'$w->getHref');
+		//d(__LINE__,__FILE__,$links,'$links');
 		
+		$this->assertEquals($w->getHref(),"http://www.adrian.com");
+		$this->assertContains("/test/",$it);
+		$this->assertContains("/test/index.php",$it);
+		$this->assertContains("/test/path/to/",$it);
+	}
+	
+	function testTutsWithInvalidLinks()
+	{
+		$w = new WebCrawler("http://stella.se.rit.edu/tests/");
+		$chap = $w->getSublinks();
+		d(__LINE__,__FILE__,$chap,'$chap');
+	}
+	
+	// todo load other tests from the dropbox
+	
+	function testGetATagsWithSubLinksRealTut()
+	{
 		
-		// todo load other tests from the dropbox
-        
-        function testGetATagsWithSubLinksRealTut()
-        {
-        	
-        }
+	}
         
  	
 	
