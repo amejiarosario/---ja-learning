@@ -133,7 +133,7 @@ HTML;
 	function testGetATagsWithSubLinks()
 	{
 		$w = new WebCrawler("http://stella.se.rit.edu/tests/tutorial");
-		$chap = $w->getSubLinks();
+		$chap = $w->getChapters();
 		//d(__LINE__,__FILE__,$chap,'$links');
 		
 		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
@@ -208,11 +208,124 @@ HTML;
 	function testTutsWithInvalidLinks()
 	{
 		$w = new WebCrawler("http://stella.se.rit.edu/tests/");
-		$chap = $w->getSublinks();
-		d(__LINE__,__FILE__,$chap,'$chap');
+		$chap = $w->getChapters();
+		//d(__LINE__,__FILE__,$chap,'$chap');
+		$this->assertEquals("this file",$chap[0]['text']);
+		$this->assertEquals('http://stella.se.rit.edu/tests/index.html',$chap[0]['link']);
+		
+		$this->assertEquals("this file (without domain)", $chap[2]['text']);
+		$this->assertEquals('/tests/path/to/index.html', $chap[2]['link']);
+		$this->assertTrue(strpos($chap[2]['content'], 'HTTP/1.1 404 Not Found' ) > 0);
 	}
 	
-	// todo load other tests from the dropbox
+	
+	function testGetSubLinks()
+	{
+		$w = new WebCrawler("http://www.yiiframework.com/doc/guide/");
+		$chap = $w->getSubLinks();
+		
+		//d(__LINE__,__FILE__,$chap,'chap');
+		$this->assertTrue(count($chap) > 20);
+			
+		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
+		
+		$this->assertContains("/doc/guide/", $it);
+
+		$this->assertContains("/doc/guide/1.1/en/changes", $it);
+		$this->assertContains("/doc/guide/1.1/en/quickstart.first-app", $it);
+		$this->assertContains("/doc/guide/1.1/sv/index", $it);
+
+		$this->assertNotContains("/doc/api/", $it);
+		$this->assertNotContains("/wiki/", $it);
+		$this->assertNotContains("/", $it);
+		$this->assertNotContains("", $it); 
+		
+		$this->assertEquals("/doc/guide/",$chap[0]['link']);
+		$this->assertEquals("Guide",$chap[0]['text']);
+	}	
+
+	function testGetSubLinksWithYiiTutorial()
+	{
+		$w = new WebCrawler("http://www.yiiframework.com/doc/guide/1.1/en");
+		
+		$code = <<<CODE
+		<a href="/demos/">Demos</a>
+		<a href="/doc/guide/">Guide</a>
+		<a href="/doc/guide/1.1/en/upgrade">Upgrading from 1.0 to 1.1</a>
+CODE;
+		
+		$chap = $w->getSubLinks($code);
+		$it = new RecursiveIteratorIterator(new RecursiveArrayIterator($chap));
+
+		$this->assertTrue(count($chap) === 1);
+		$this->assertContains("/doc/guide/1.1/en/upgrade", $it);
+		$this->assertNotContains("/doc/guide/", $it);
+		$this->assertNotContains("/demos/", $it);
+	}
+	
+	function testWithYiiTutorial()
+	{
+		//$w = new WebCrawler("http://www.yiiframework.com/doc/guide/1.1/en/"); // same
+		$w = new WebCrawler("http://www.yiiframework.com/doc/guide/1.1/en"); 
+		$chap = $w->getSubLinks();
+		//var_export($chap);
+		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
+		$this->assertTrue(count($chap) > 20);
+		
+		$this->assertNotContains("/doc/guide/", $it);
+		$this->assertNotContains("/doc/guide/1.1/zh_cn/index", $it);
+		$this->assertNotContains("/doc/guide/1.1/ja/index", $it);
+	}	
+	
+	function testWithQnxTutorial()
+	{
+		//$w = new WebCrawler("http://www.yiiframework.com/doc/guide/1.1/en/"); // same
+		$w = new WebCrawler("http://www.qnx.com/developers/docs/6.4.1/neutrino/bookset.html"); 
+		$chap = $w->getSubLinks();
+		//d(__LINE__,__FILE__, $chap, '$chap');
+		
+		$it = new RecursiveIteratorIterator( new RecursiveArrayIterator($chap));
+
+		// assertions
+		$this->assertTrue(count($chap) > 10);
+		
+		$this->assertContains("System Architecture", $it);              
+		$this->assertNotContains("./sys_arch/about.html", $it);
+		$this->assertContains("/developers/docs/6.4.1/neutrino/sys_arch/about.html", $it);
+		
+		$this->assertContains("User's Guide",$it);
+		$this->assertNotContains("./user_guide/about.html", $it);
+		$this->assertContains("/developers/docs/6.4.1/neutrino/user_guide/about.html", $it);
+	}
+	
+	function testGetContentLinks()
+	{
+		$url = "http://www.adrianmejiarosario.com/";
+		$w = new WebCrawler($url);
+		
+		$link = "/content/ruby-rails-architectural-design";
+		$c = $w->getContent($link);
+		//d(__LINE__,__FILE__,$c,'$c');
+		$this->assertTrue(strlen($c)>100);
+		$this->assertTrue(strpos($c,"A study case of high-traffic web application using Rails is Twitter. They started using Ruby on Rails but they reached a point that the scaling of their platform was not cost-effective. This was mainly because Ruby on Rails has poor multi-threading support. As in 2011, they have more than 1 billion tweets per week and 200 million users.")>0);
+		
+		/* other cases
+		$link = "http://www.adrianmejiarosario.com/content/ruby-rails-architectural-design";
+		$c = $w->getContent($link);
+		//d(__LINE__,__FILE__,$c,'$c');
+		$this->assertTrue(strlen($c)>100);
+		
+		$link = "www.adrianmejiarosario.com/content/ruby-rails-architectural-design";
+		$c = $w->getContent($link);
+		//d(__LINE__,__FILE__,$c,'$c');
+		$this->assertTrue(strlen($c)>100);
+		
+		$link = "";
+		$c = $w->getContent($link);
+		//d(__LINE__,__FILE__,$c,'$c');
+		$this->assertTrue(strlen($c)>100);
+		//*/
+	}	
 	
 	function testGetATagsWithSubLinksRealTut()
 	{

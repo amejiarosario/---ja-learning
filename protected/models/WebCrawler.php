@@ -147,14 +147,8 @@ class WebCrawler
 		return array('link' => $arr[0], 'schema'=>$arr[1], 'domain'=>$arr[2], 'path'=>$arr[3], 'file'=>$arr[4], 'query'=>$arr[5]);
 	}
 	
-	/**
-	 * @url url to extract content
-	 * @title block of information to extract. 	
-	 * @return page content (text main content)
-	 */
-	public function getContent($url, $title="")
+	public function getFullLink($url)
 	{
-	
 		//echo ' L158 getContent.url = '.$url;
 		//validate URL
 		$surl = $this->getUrlElements($url);
@@ -165,6 +159,17 @@ class WebCrawler
 			$this->setUrlElements();
 			$url = $this->_schema.$this->_hostname.$surl['path'][0].$surl['file'][0];
 		}
+		return $url;		
+	}
+	
+	/**
+	 * @url url to extract content
+	 * @title block of information to extract. 	
+	 * @return page content (text main content)
+	 */
+	public function getContent($url, $title="")
+	{
+		$url = $this->getFullLink($url);
 	
 		// Load content
 		$html = file_get_contents($url);
@@ -258,9 +263,9 @@ class WebCrawler
  	}
 	
     /**
-	 * @return an array with the keys 'name', 'links', and the 'content' of the sublinks
+	 * @return an array with the keys 'name', 'links', and the 'content' (if getContent is true) of the sublinks
 	 */
-	public function getSubLinks($HtmlCode = '')
+	public function getSubLinks($HtmlCode = '', $getContent = false)
 	{
 		$subLinks = array();
 		
@@ -299,8 +304,11 @@ class WebCrawler
 					if(strlen($chapURLs['text'][$x])>0)
 					{
 						// get the chapter content, be aware that the $chapURLs['link'][$x] could have the a full URL.
+						$content = 'Content not loaded';
 						try{
-							$content = $this->getContent($chapURL['link'][0]); 
+							if($getContent){
+								$content = $this->getContent($chapURL['link'][0]); 
+							}
 						//*
 						} catch(Exception $e) {
 							// TODO think in a way to handle this exception BETTER.
@@ -320,6 +328,14 @@ class WebCrawler
 		}
 		
 		return $subLinks;
+	}
+	
+    /**
+	 * @return an array with the keys 'name', 'links', and the 'content' of the sublinks
+	 */	
+	public function getChapters()
+	{
+		return $this->getSubLinks('',true);
 	}
 	
 	
