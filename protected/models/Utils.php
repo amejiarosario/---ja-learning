@@ -1,5 +1,8 @@
 <?php
 
+define('DEBUG','true');
+define('DP','if(DEBUG) d(__LINE__,__FILE__,');
+
 /**
  * Regular expression evaluator
  * @param $regex regular expression

@@ -2,6 +2,7 @@
 
 require_once('Utils.php');
 
+
 /**
  * Get the source code of a website and analize its components.
  */
@@ -128,7 +129,48 @@ class WebCrawler
 		if($this->_path === "")
 			$this->_path = "/";
 		
-		$this->root = $this->_schema . "://" . $this->_hostname . $this->_path;
+		// Save link
+		$this->root = $this->_schema . $this->_hostname . $this->_path;
+			
+ 		// TODO -  In some cases the filename looks like the path. e.g. http://www.go2linux.org/latex-simple-tutorial	
+		
+		d(__LINE__,__FILE__, $this->root, 'link.root');
+		d(__LINE__,__FILE__, $this->_file, '$this->_file');
+		
+		// if is not a path, move the last element to filename		
+		if(empty($this->_file)){
+			try{
+				$cont = file_get_contents($this->root."/");
+				d(__LINE__,__FILE__, $cont, '$cont');
+				
+				/*
+				if(strlen($cont)<1)
+					throw new Exception("not valid");
+				*/
+				
+				//$cont = file_get_contents($this->root);
+				//d(__LINE__,__FILE__, $cont, '$cont');
+				
+			}catch(Exception $e){
+				// if is not a path, make it a filename.
+				d(__LINE__,__FILE__, $e->getMessage(), '$e.message');
+				$pos = strrpos($this->_path,"/")+1;
+				$this->_file = substr($this->_path, $pos);
+				$this->_path = substr($this->_path,0,$pos);
+				
+				echo "file=".$this->_file . "\n";
+				echo "path=".$this->_path . "\n";
+			}
+		}
+		
+		
+		echo $this->root;
+	}
+	
+	public function getRoot()
+	{
+		$this->root = $this->_schema . $this->_hostname . $this->_path;
+		return $this->root;
 	}
 	
 	/**
@@ -144,6 +186,9 @@ class WebCrawler
 	public function getUrlElements($url)
 	{
 		$arr = regex('%^((?:https?|ftp|file)://)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)?(.*?)?(?:(\w+\.\w+)((?:#|\?|$)(?:[^.]*)))?$%i', $url);
+		
+		// TODO -  In some cases the filename looks like the path. e.g. http://www.go2linux.org/latex-simple-tutorial
+		
 		return array('link' => $arr[0], 'schema'=>$arr[1], 'domain'=>$arr[2], 'path'=>$arr[3], 'file'=>$arr[4], 'query'=>$arr[5]);
 	}
 	
@@ -261,7 +306,7 @@ class WebCrawler
 		$a = regex('%<a\\s+href\\s*=\\s*(?:"|\')([^"\']*)[^>]*\\s*>((?:(?!</a>).)*)</a>%i', $HtmlCode);
 		return array('ahref'=>$a[0],'link'=>$a[1],'text'=>$a[2]);
  	}
-	
+ 	
     /**
 	 * @return an array with the keys 'name', 'links', and the 'content' (if getContent is true) of the sublinks
 	 */
@@ -270,17 +315,14 @@ class WebCrawler
 		$subLinks = array();
 		
 		// 1. get all the A Tags
-		$chapURLs = $this->getATags($HtmlCode);
-		
-		// TODO-IMHERE: root = schema+domain+path; links= diff(root,link);
+		$chapURLs = $this->getATags($HtmlCode); // get all the HTML A tags in the website
+		d(__LINE__,__FILE__,$chapURLs, 'getATags');
 		
 		// 2. return only the ones that are in the same domain+path or deeper
 		for($x=0; $x < count($chapURLs['link']); $x++)
 		{
-			// all path should with '/'
-			//if(strrpos($this->getPath()) === strlen($this->getPath())-1)
 			
-			// get equivalent link
+			// process links with dots "."
 			if(strpos($chapURLs['link'][$x],".") === 0) // if link starts with '.'  e.g. href="./index.html"
 				$chapURLs['link'][$x] = $this->getPath() . $chapURLs['link'][$x]; // subtitute '.' with current path
 				
@@ -288,7 +330,11 @@ class WebCrawler
 			$chapURLs['link'][$x] = str_replace("/./","/",$chapURLs['link'][$x]); 
 			$chapURLs['link'][$x] = str_replace("./","/",$chapURLs['link'][$x]); 
 			
-			$chapURL = $this->getUrlElements($chapURLs['link'][$x]);
+			
+			// get url elements
+			$chapURL = $this->getUrlElements($chapURLs['link'][$x]); // get all the elements in a specific URL
+			
+			if(DEBUG) d(__LINE__,__FILE__, $chapURL['link'],'link in process');
 		
 			// if domains are equals
 			if($this->getHost() === $chapURL['domain'][0] || $chapURL['domain'][0] === "" ) 
@@ -305,14 +351,24 @@ class WebCrawler
 					{
 						// get the chapter content, be aware that the $chapURLs['link'][$x] could have the a full URL.
 						$content = 'Content not loaded';
+						
 						try{
 							if($getContent){
 								$content = $this->getContent($chapURL['link'][0]); 
 							}
+							//* debugging purposes
+							else {
+								echo "-x content will not be loaded by user decision.";			
+							}
+							//*/
 						//*
 						} catch(Exception $e) {
 							// TODO think in a way to handle this exception BETTER.
 							$content = $e->getMessage();
+							
+							//* debugging purposes
+								echo "-x content will not be loaded by error: " . $content . ".\n";			
+							//*/							
 						}
 						//*/
 					
@@ -322,9 +378,32 @@ class WebCrawler
 							'link'=> $chapURLs['link'][$x], 
 							'content' => $content,
 						);
+						//* debugging purposes
+						echo "-! content LOADED successfully. \n";
+						//*/
 					}
+					//* debugging purposes
+					else {
+						echo "-x no link information/text. \n";			
+					}
+					//*/	
+								
 				} 
+				//* debugging purposes
+				else {
+					echo "-x different paths. \n";
+					echo "Tutotrial URL: " . $this->getPath();			
+					echo "\nChapter URL: " . $chapURL['path'][0];
+					echo "\n";			
+				}
+				//*/				
+				
+			} // end // if domains are equals
+			//* debugging purposes
+			else {
+				echo "-x different domain. \n";			
 			}
+			//*/
 		}
 		
 		return $subLinks;

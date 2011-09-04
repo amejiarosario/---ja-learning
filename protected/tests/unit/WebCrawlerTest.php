@@ -20,12 +20,8 @@ class WebCrawlerTest extends CTestCase
 	// test regex url parser (get url elements)
 	function testGetUrlElements()
 	{
-		$url1 = "http://gskinner.com/RegExr/"; //with http, path and no-file
-		$url2 = "www.spaweditor.com/scripts/regex/index.php"; // non-http, path and file
-		$url3 = "regexpal.com"; // non-http, non-www, non-path or file
-		$url4 = "/scripts/regex/"; // no domain, just path
-		$url5 = ""; //nothing
 	
+		$url1 = "http://gskinner.com/RegExr/"; //with http, path and no-file
 		$w = new WebCrawler($url1);
 		//*
 		$this->assertEquals($url1, $w->getHref());
@@ -33,20 +29,24 @@ class WebCrawlerTest extends CTestCase
 		$this->assertEquals("/RegExr/", $w->getPath());
 		
 		// TODO fix this. the path is '/scripts/regex/' and file is 'index.php'
+		$url2 = "www.spaweditor.com/scripts/regex/index.php"; // non-http, path and file
 		$w->setHref($url2);
 		$this->assertEquals("www.spaweditor.com", $w->getHost());
 		$this->assertEquals("/scripts/regex/", $w->getPath()); 
 		$this->assertEquals("index.php", $w->getFile());
 		
+		$url3 = "regexpal.com"; // non-http, non-www, non-path or file
 		$w->setHref($url3);
 		$this->assertEquals("regexpal.com", $w->getHost());
 		$this->assertEquals("/", $w->getPath());
 		$this->assertEquals("", $w->getFile());
 		
+		$url4 = "/scripts/regex/"; // no domain, just path
 		$w->setHref($url4);
 		$this->assertEquals("", $w->getHost());
 		$this->assertEquals("/scripts/regex/", $w->getPath());
 		
+		$url5 = ""; //nothing
 		$w->setHref($url5);
 		$this->assertEquals("", $w->getHost());
 		$this->assertEquals("/", $w->getPath());
@@ -84,6 +84,16 @@ class WebCrawlerTest extends CTestCase
 		$this->assertEquals("/doc/guide/1.1/en", $w->getPath());
 		$this->assertEquals("", $w->getFile());
 		$this->assertEquals("", $w->getQuery());
+		
+		// third battery test
+		//http://www.go2linux.org/latex-simple-tutorial
+		$w->setHref('http://www.go2linux.org/latex-simple-tutorial');
+		$this->assertEquals("www.go2linux.org", $w->getHost());
+		$this->assertEquals("/", $w->getPath());
+		$this->assertEquals("latex-simple-tutorial", $w->getFile());
+		$this->assertEquals("", $w->getQuery());
+		//http://library.rit.edu/libhours
+		//http://docs.python.org/tutorial/appetite.html
 		
 	}
 	
@@ -329,10 +339,10 @@ CODE;
 	
 	function testGetATagsWithSubLinksRealTut()
 	{
-		
+		$w = new WebCrawler('http://www.go2linux.org/latex-simple-tutorial');
+		$chaps = $w->getChapters();
+		d(__LINE__,__FILE__,$chaps,'$chaps');
 	}
-        
- 	
 	
 } // END UNIT TESTING CLASS
 
