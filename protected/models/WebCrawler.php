@@ -343,7 +343,7 @@ class WebCrawler
 				if(	$this->getPath() === "/" || 
 					strpos($chapURL['path'][0],$this->getPath()) === 0)  
 				{
-					if( $chapURL['path'][0] != "/" )
+					if( $chapURL['path'][0] != "/" && $chapURL['path'][0] != $this->getPath() ) // avoid the same tut link in the chapters
 					{
 						$chapURLs['text'][$x] = strip_tags($chapURLs['text'][$x]); // strip html tags
 						
@@ -372,16 +372,36 @@ class WebCrawler
 								//*/							
 							}
 							//*/
-						
-							// save the link (chapter)
-							$subLinks[] = array(
-								'text'=>$chapURLs['text'][$x], 
-								'link'=> $chapURLs['link'][$x], 
-								'content' => $content,
-							);
+							
+							//check if it has been already saved.
+							$new = true;
+							foreach($subLinks as $s)
+							{
+								if($s['link'] == $chapURLs['link'][$x]){
+									$new = false;
+									break;
+								}
+							}
+							
+							if($new)
+							{
+								// save the link (chapter)
+								$subLinks[] = array(
+									'text'=>$chapURLs['text'][$x], 
+									'link'=> $chapURLs['link'][$x], 
+									'content' => $content,
+								);
+								//* debugging purposes
+								if(DEBUG) echo "-! content LOADED successfully. \n";
+								//*/							
+							}
 							//* debugging purposes
-							if(DEBUG) echo "-! content LOADED successfully. \n";
+							else {
+								if(DEBUG) echo "-x the links has been already saved. \n";			
+							}
 							//*/
+							
+	
 						}
 						//* debugging purposes
 						else {

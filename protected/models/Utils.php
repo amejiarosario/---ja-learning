@@ -1,6 +1,6 @@
 <?php
 
-define('DEBUG',false);
+define('DEBUG',true);
 define('DP','if(DEBUG) d(__LINE__,__FILE__,');
 
 /**

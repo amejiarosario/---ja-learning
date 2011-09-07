@@ -444,3 +444,51 @@ Stack trace:
 REQUEST_URI=/ninjalearning/index.php?r=tutorial/create
 in /var/www/ninjalearning/protected/controllers/TutorialController.php (86)
 in /var/www/ninjalearning/index.php (13)
+2011/09/07 01:34:18 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/07 01:34:18 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/07 01:34:18 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/07 01:34:18 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/07 01:34:19 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/07 01:34:19 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/07 01:34:19 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/07 01:34:19 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/07 01:34:19 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/07 01:34:19 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/07 01:34:19 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/07 01:34:19 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
