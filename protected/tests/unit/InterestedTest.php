@@ -17,22 +17,22 @@ class InterestedTest extends CTestCase
 		$this->assertTrue(DEBUG);
 	}
 	
-	function testDrupalTutLinks()
+	function testGetATagsWithSubLinksRealTut()
 	{
-		$w = new WebCrawler("http://drupal.org/documentation"); 
-		$chap = $w->getSubLinks();
-		d(__LINE__,__FILE__, $chap, '$chap');
+		$w = new WebCrawler('http://www.go2linux.org/latex-simple-tutorial');
+		$chaps = $w->getChapters();
+		if(DEBUG) d(__LINE__,__FILE__,$chaps,'$chaps');
 		
-		// assertions
-		//$this->assertTrue(count($chap) > 10);
+		$this->assertEquals(count($chaps), 6); //TODO - WebCrawler is considering '/' as a chapter and it is not!
+		$this->assertEquals($chaps[0]['text'],'Introduction to LaTeX');
+		$this->assertEquals($chaps[5]['link'],'http://www.go2linux.org/creating-tables-with-latex');
 		
-		$this->assertEquals($chap[0]['text'],'Understanding Drupal');
-		$this->assertEquals($chap[6]['link'],'/documentation/git');
-		// avoid link repetition. E.g Installation Guide is repeated
-		$this->assertEquals(count($chap),7);
-		
-		
+		// TODO - assert content - http://www.mutinydesign.co.uk/scripts/problems-encountered-with-php-dom-functions---3
+		$this->assertTrue(strpos("Exception",$chaps[3]['content'])<0); // check that has not exception.
+		$this->assertEquals(strlen($chaps[3]['content'])>30); // assert that there is some content.
 	}
+	
+
 	
 //*/	
 }

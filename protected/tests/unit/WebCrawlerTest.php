@@ -342,6 +342,23 @@ CODE;
 		//*/
 	}	
 	
+	// test repeated chapter links
+	function testDrupalTutLinks()
+	{
+		$w = new WebCrawler("http://drupal.org/documentation"); 
+		$chap = $w->getSubLinks();
+		d(__LINE__,__FILE__, $chap, '$chap');
+		
+		// assertions
+		//$this->assertTrue(count($chap) > 10);
+		
+		$this->assertEquals($chap[0]['text'],'Understanding Drupal');
+		$this->assertEquals($chap[6]['link'],'/documentation/git');
+		// avoid link repetition. E.g Installation Guide is repeated
+		$this->assertEquals(count($chap),7);
+	}
+	
+	// todo assert invalid content - Read http://www.mutinydesign.co.uk/scripts/problems-encountered-with-php-dom-functions---3/
 	function testGetATagsWithSubLinksRealTut()
 	{
 		$w = new WebCrawler('http://www.go2linux.org/latex-simple-tutorial');
@@ -352,11 +369,15 @@ CODE;
 		$this->assertEquals($chaps[0]['text'],'Introduction to LaTeX');
 		$this->assertEquals($chaps[5]['link'],'http://www.go2linux.org/creating-tables-with-latex');
 		
-		// TODO - assert content
-		//$this->assertEquals(strpos("Exception",$chaps[3]['content'])<0); // check that has not exception.
-		//$this->assertEquals(strlen($chaps[3]['content'])>30); // assert that there is some content.
+		// TODO - assert content - http://www.mutinydesign.co.uk/scripts/problems-encountered-with-php-dom-functions---3
+		// 'content' => 'Exception: DOMDocument::loadHTML(): Namespace prefix g is not defined in Entity, line: 119',
+		$this->assertTrue(strpos("Exception",$chaps[3]['content'])<0); // check that has not exception.
+		$this->assertEquals(strlen($chaps[3]['content'])>30); // assert that there is some content.
+		
+		// 
 	}
 	
+
 } // END UNIT TESTING CLASS
 
 ?>
