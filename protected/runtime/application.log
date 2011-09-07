@@ -377,3 +377,70 @@ in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
 in /var/www/ninjalearning/protected/models/Tutorial.php (133)
 in /var/www/ninjalearning/protected/models/Tutorial.php (159)
 in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:08 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:08 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:08 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:08 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:08 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:08 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:08 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:09 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:09 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:09 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:09 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:09 [warning] [application] Failed to set unsafe attribute "content" of "Chapter".
+in /var/www/ninjalearning/protected/models/Tutorial.php (133)
+in /var/www/ninjalearning/protected/models/Tutorial.php (159)
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (85)
+2011/09/05 13:28:09 [error] [php] Cannot modify header information - headers already sent by (output started at /var/www/ninjalearning/protected/models/Utils.php:62) (/var/www/yii/framework/web/CHttpRequest.php:657)
+Stack trace:
+#0 /var/www/ninjalearning/protected/controllers/TutorialController.php(86): TutorialController->redirect()
+#1 /var/www/yii/framework/web/actions/CInlineAction.php(50): TutorialController->actionCreate()
+#2 /var/www/yii/framework/web/CController.php(300): CInlineAction->runWithParams()
+#3 /var/www/yii/framework/web/filters/CFilterChain.php(134): TutorialController->runAction()
+#4 /var/www/yii/framework/web/filters/CFilter.php(41): CFilterChain->run()
+#5 /var/www/yii/framework/web/CController.php(1144): CAccessControlFilter->filter()
+#6 /var/www/yii/framework/web/filters/CInlineFilter.php(59): TutorialController->filterAccessControl()
+#7 /var/www/yii/framework/web/filters/CFilterChain.php(131): CInlineFilter->filter()
+#8 /var/www/yii/framework/web/CController.php(283): CFilterChain->run()
+#9 /var/www/yii/framework/web/CController.php(257): TutorialController->runActionWithFilters()
+#10 /var/www/yii/framework/web/CWebApplication.php(277): TutorialController->run()
+#11 /var/www/yii/framework/web/CWebApplication.php(136): CWebApplication->runController()
+#12 /var/www/yii/framework/base/CApplication.php(158): CWebApplication->processRequest()
+#13 /var/www/ninjalearning/index.php(13): CWebApplication->run()
+REQUEST_URI=/ninjalearning/index.php?r=tutorial/create
+in /var/www/ninjalearning/protected/controllers/TutorialController.php (86)
+in /var/www/ninjalearning/index.php (13)

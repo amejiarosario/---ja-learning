@@ -134,14 +134,14 @@ class WebCrawler
 			
  		// TODO -  In some cases the filename looks like the path. e.g. http://www.go2linux.org/latex-simple-tutorial	
 		
-		d(__LINE__,__FILE__, $this->root, 'link.root');
-		d(__LINE__,__FILE__, $this->_file, '$this->_file');
+		if(DEBUG) d(__LINE__,__FILE__, $this->root, 'link.root');
+		if(DEBUG) d(__LINE__,__FILE__, $this->_file, '$this->_file');
 		
 		// if is not a path, move the last element to filename		
 		if(empty($this->_file)){
 			try{
 				$cont = file_get_contents($this->root."/");
-				d(__LINE__,__FILE__, $cont, '$cont');
+				if(DEBUG) d(__LINE__,__FILE__, $cont, '$cont');
 				
 				/*
 				if(strlen($cont)<1)
@@ -153,18 +153,18 @@ class WebCrawler
 				
 			}catch(Exception $e){
 				// if is not a path, make it a filename.
-				d(__LINE__,__FILE__, $e->getMessage(), '$e.message');
+				if(DEBUG) d(__LINE__,__FILE__, $e->getMessage(), '$e.message');
 				$pos = strrpos($this->_path,"/")+1;
 				$this->_file = substr($this->_path, $pos);
 				$this->_path = substr($this->_path,0,$pos);
 				
-				echo "file=".$this->_file . "\n";
-				echo "path=".$this->_path . "\n";
+				if(DEBUG) echo "file=".$this->_file . "\n";
+				if(DEBUG) echo "path=".$this->_path . "\n";
 			}
 		}
 		
 		
-		echo $this->root;
+		if(DEBUG) echo $this->root;
 	}
 	
 	public function getRoot()
@@ -316,7 +316,7 @@ class WebCrawler
 		
 		// 1. get all the A Tags
 		$chapURLs = $this->getATags($HtmlCode); // get all the HTML A tags in the website
-		d(__LINE__,__FILE__,$chapURLs, 'getATags');
+		if(DEBUG) d(__LINE__,__FILE__,$chapURLs, 'getATags');
 		
 		// 2. return only the ones that are in the same domain+path or deeper
 		for($x=0; $x < count($chapURLs['link']); $x++)
@@ -341,67 +341,75 @@ class WebCrawler
 			{
 				// if there is not path in the domain, all the links' path are inside 
 				if(	$this->getPath() === "/" || 
-					strpos($chapURL['path'][0],$this->getPath()) === 0 )  
+					strpos($chapURL['path'][0],$this->getPath()) === 0)  
 				{
-					
-					$chapURLs['text'][$x] = strip_tags($chapURLs['text'][$x]); // strip html tags
-					
-					// if it has some content besides HTML tags save it, otherwise discard it.
-					if(strlen($chapURLs['text'][$x])>0)
+					if( $chapURL['path'][0] != "/" )
 					{
-						// get the chapter content, be aware that the $chapURLs['link'][$x] could have the a full URL.
-						$content = 'Content not loaded';
+						$chapURLs['text'][$x] = strip_tags($chapURLs['text'][$x]); // strip html tags
 						
-						try{
-							if($getContent){
-								$content = $this->getContent($chapURL['link'][0]); 
-							}
-							//* debugging purposes
-							else {
-								echo "-x content will not be loaded by user decision.";			
+						// if it has some content besides HTML tags save it, otherwise discard it.
+						if(strlen($chapURLs['text'][$x])>0)
+						{
+							// get the chapter content, be aware that the $chapURLs['link'][$x] could have the a full URL.
+							$content = 'Content not loaded';
+							
+							try{
+								if($getContent){
+									$content = $this->getContent($chapURL['link'][0]); 
+								}
+								//* debugging purposes
+								else {
+									if(DEBUG) echo "-x content will not be loaded by user decision.";			
+								}
+								//*/
+							//*
+							} catch(Exception $e) {
+								// TODO think in a way to handle this exception BETTER.
+								$content = 'Exception: ' . $e->getMessage();
+								
+								//* debugging purposes
+									if(DEBUG) echo "-x content will not be loaded by error: " . $content . ".\n";			
+								//*/							
 							}
 							//*/
-						//*
-						} catch(Exception $e) {
-							// TODO think in a way to handle this exception BETTER.
-							$content = $e->getMessage();
-							
+						
+							// save the link (chapter)
+							$subLinks[] = array(
+								'text'=>$chapURLs['text'][$x], 
+								'link'=> $chapURLs['link'][$x], 
+								'content' => $content,
+							);
 							//* debugging purposes
-								echo "-x content will not be loaded by error: " . $content . ".\n";			
-							//*/							
+							if(DEBUG) echo "-! content LOADED successfully. \n";
+							//*/
 						}
-						//*/
-					
-						// save the link (chapter)
-						$subLinks[] = array(
-							'text'=>$chapURLs['text'][$x], 
-							'link'=> $chapURLs['link'][$x], 
-							'content' => $content,
-						);
 						//* debugging purposes
-						echo "-! content LOADED successfully. \n";
+						else {
+							if(DEBUG) echo "-x no link information/text. \n";			
+						}
 						//*/
 					}
 					//* debugging purposes
 					else {
-						echo "-x no link information/text. \n";			
-					}
-					//*/	
+						if(DEBUG) echo "\n-x link is '/'. \n";			
+					}	
 								
 				} 
 				//* debugging purposes
 				else {
+				if(DEBUG) {
 					echo "-x different paths. \n";
 					echo "Tutotrial URL: " . $this->getPath();			
 					echo "\nChapter URL: " . $chapURL['path'][0];
 					echo "\n";			
+					}
 				}
 				//*/				
 				
 			} // end // if domains are equals
 			//* debugging purposes
 			else {
-				echo "-x different domain. \n";			
+				if(DEBUG) echo "-x different domain. \n";			
 			}
 			//*/
 		}

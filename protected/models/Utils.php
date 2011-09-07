@@ -1,6 +1,6 @@
 <?php
 
-define('DEBUG','true');
+define('DEBUG',false);
 define('DP','if(DEBUG) d(__LINE__,__FILE__,');
 
 /**
@@ -24,9 +24,11 @@ function regex($regex, $text="")
 	try {
 		preg_match_all($regex, $text, $result);	
 	} catch(Exception $e){
-		echo 'exception: ', $e->getMessage(), "\n";
-		d(__LINE__,__FILE__, $regex, '$regex');
-		d(__LINE__,__FILE__, $text, '$text');
+		if(DEBUG) {
+			echo 'exception: ', $e->getMessage(), "\n";
+			d(__LINE__,__FILE__, $regex, '$regex');
+			d(__LINE__,__FILE__, $text, '$text');
+		}
 		throw $e;	
 	}
 
@@ -57,10 +59,11 @@ function d($line,$file,$var, $varname="variable")
 {
 	// example of use:
 	// d(__LINE__,__FILE__, $variable, '$variable')
-	
-	echo "\n#($file:$line) ". $varname . ' = ';
-	var_export($var);
-	echo "\n";
+	if(DEBUG) {
+		echo "\n#($file:$line) ". $varname . ' = ';
+		var_export($var);
+		echo "\n";
+	}
 } 
 
 

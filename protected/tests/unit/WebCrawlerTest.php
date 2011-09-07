@@ -10,6 +10,11 @@ define('TEST_WEBSITE_LINKS','26');
 
 class WebCrawlerTest extends CTestCase 
 {
+	function testDebug()
+	{
+		$this->assertFalse(DEBUG);
+	}
+
 	// just testing
 	function testTester()
 	{
@@ -341,7 +346,15 @@ CODE;
 	{
 		$w = new WebCrawler('http://www.go2linux.org/latex-simple-tutorial');
 		$chaps = $w->getChapters();
-		d(__LINE__,__FILE__,$chaps,'$chaps');
+		if(DEBUG) d(__LINE__,__FILE__,$chaps,'$chaps');
+		
+		$this->assertEquals(count($chaps), 6); //TODO - WebCrawler is considering '/' as a chapter and it is not!
+		$this->assertEquals($chaps[0]['text'],'Introduction to LaTeX');
+		$this->assertEquals($chaps[5]['link'],'http://www.go2linux.org/creating-tables-with-latex');
+		
+		// TODO - assert content
+		//$this->assertEquals(strpos("Exception",$chaps[3]['content'])<0); // check that has not exception.
+		//$this->assertEquals(strlen($chaps[3]['content'])>30); // assert that there is some content.
 	}
 	
 } // END UNIT TESTING CLASS
